@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+              integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+            <title>SuperSightingSighting</title>
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col text-center">
+                    <h1>Super Sighting Sighting</h1>
+                </div>
+            </div>
+            <div class="row m-4 ">
+                <div class="col text-center m-3">
+                    <a href="heros" class="btn btn-outline-primary btn-lg">Super Heroes</a>
+                </div>
+                <div class="col text-center m-3">
+                    <a href="locations" class="btn btn-outline-primary btn-lg">Locations</a>
+                </div>
+                <div class="col text-center m-3">
+                    <a href="organizations" class="btn btn-outline-primary btn-lg">Organizations</a>
+                </div>
+                <div class="col text-center m-3">
+                    <a href="sightings" class="btn btn-outline-primary btn-lg">Sightings</a>
+                </div>
+            </div>
+        </div>
+        <!-- Button trigger modal --><div class="row">
+            <div class="col-10"></div>
+            <div class="col-2">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addSightingModal">
+                    Add Sighting
+                </button>
+            </div>
+
+        </div>
+        <!--*****************Add Sighting Modal******************-->
+        <div class="modal" id="addSightingModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Sighting</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+
+                        <form type="form" action="addSighting" method="POST">                          
+
+                            <div class="form-group">
+                                <label  for="sightingLocation">Location</label>
+                                <select  id="sightingLocation" class="form-control" name="locationId">
+                                    <option th:each="location : ${locations}"
+                                            th:value="${location.id}"
+                                            th:text="${location.name}">Location</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label  for="sightingHero">hero</label>
+                                <select  id="sightingHero" class="form-control" name="heroId">
+                                    <option th:each="hero : ${heroes}"
+                                            th:value="${hero.id}"
+                                            th:text="${hero.name}">Hero</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="sightingDate">Name</label>
+                                <input id="sightingDate" type="date" class="form-control" name="date"/>
+                            </div>
+                            <div class="form-group">
+                                <label  for="sightingDescription">Description</label>
+                                <textarea rows="2" class="form-control text-start" id="sightingDescription" name="description">
+                                </textarea>
+                            </div>                                             
+                            <button type="submit" class="btn btn-primary">Add Sighting</button> 
+                        </form>                
+                    </div>                   
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col m-4">
+                <!--                    <h3>Sightings</h3>-->
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Location</th>
+                            <th>Hero</th>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="sighting : ${sightings}">
+                            <td th:text="${sighting.id}">ID</td>
+                            <td th:text="${sighting.location.name}">Location</td>
+                            <td th:text="${sighting.hero.name}">Hero</td>
+                            <td th:text="${sighting.date}">Date</td>
+                            <td th:text="${sighting.description}">Description</td>
+                            <td><a th:attr="href=${'#editModal'+sighting.id}" data-toggle="modal" th:data-row="${sighting}">Edit</a></td>
+                            <div th:each="sighting : ${sightings}" class="modal" th:attr="id=${'editModal'+ sighting.id}" tabindex="-1" role="dialog">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Edit Sighting</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+
+                                            <form type="form" action="editSighting" method="POST">
+
+                                                <div class="form-group">
+                                                    <label  for="sightingLocation">Location</label>
+                                                    <select  id="sightingLocation" class="form-control" name="locationId">
+                                                        <option th:each="location : ${locations}"
+                                                                th:value="${location.id}"
+                                                                th:text="${location.name}"
+                                                                th:selected="${location == sighting.location}">Location</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label  for="sightingHero">hero</label>
+                                                    <select  id="sightingHero" class="form-control" name="heroId">
+                                                        <option th:each="hero : ${heroes}"
+                                                                th:value="${hero.id}"
+                                                                th:text="${hero.name}"
+                                                                th:selected="${sighting.hero == hero}">Hero</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="sightingDate">Name</label>
+                                                    <input id="sightingDate" type="date" class="form-control" name="date" th:value="${sighting.date}"/>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label  for="sightingDescription">Description</label>
+                                                    <textarea rows="2" class="form-control text-start" id="sightingDescription" name="description" 
+                                                              th:text="${sighting.description}">
+                                                        Description
+                                                    </textarea>
+                                                </div>                                               
+                                                <input type="hidden" name="id" th:value="${sighting.id}"/>
+                                                <button type="submit" class="btn btn-primary">Update Sighting</button> 
+                                            </form>                
+                                        </div>                                       
+                                    </div>
+                                </div>
+                            </div>
+                            <td><a href="#" th:attr="href=${'#deleteModal'+sighting.id}" data-toggle="modal" >Delete</a></td>
+<!--                            **********************Delete Modal**********************************-->
+                            <div class="modal" th:each="sighting : ${sightings}" th:attr="id=${'deleteModal'+ sighting.id}" tabindex="-1" role="dialog">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Deletion Confirmation</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Would you like to proceed with deletion?</p>                                            
+                                        </div>
+                                        <div class="modal-footer">
+                                            <form type="form" action="deleteSighting" method="POST">
+                                                <input type="hidden" name="id" th:value="${sighting.id}"/>
+                                                <button type="submit" class="btn btn-primary" th:href="@{/deleteSighting(id=${sighting.id})}">Yes</button>
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        </div>
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+                integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+                integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+                integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+    </body>
+
+</html>

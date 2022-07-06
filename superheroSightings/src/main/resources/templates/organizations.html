@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+              integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+            <title>SuperHeroSighting</title>
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col text-center">
+                    <h1>Super Hero Sighting</h1>
+                </div>
+            </div>
+            <div class="row m-4 ">
+                <div class="col text-center m-3">
+                    <a href="heros" class="btn btn-outline-primary btn-lg">Super Heroes</a>
+                </div>
+                <div class="col text-center m-3">
+                    <a href="locations" class="btn btn-outline-primary btn-lg">Locations</a>
+                </div>
+                <div class="col text-center m-3">
+                    <a href="organizations" class="btn btn-outline-primary btn-lg">Organizations</a>
+                </div>
+                <div class="col text-center m-3">
+                    <a href="sightings" class="btn btn-outline-primary btn-lg">Sightings</a>
+                </div>
+            </div>
+        </div>
+        <!-- Button trigger modal --><div class="row">
+            <div class="col-10"></div>
+            <div class="col-2">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addOrganizationModal">
+                    Add Organization
+                </button>
+            </div>
+
+        </div>
+        <!--*****************Add Organization Modal******************-->
+        <div class="modal" id="addOrganizationModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Organization</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+
+                        <form type="form" action="addOrganization" method="POST">
+                            <div class="form-group">
+                                <label for="organizationName">Name</label>
+                                <input type="text" class="form-control" id="organizationName" name="name"/>
+                            </div>
+                            <div class="form-group">
+                                <label  for="organizationDescription">Description</label>
+                                <textarea rows="2" class="form-control text-start" id="organizationDescription" name="description">
+                                </textarea>
+                            </div>
+                            <div class="form-group">
+                                <label  for="organizationAddress">Address</label>
+                                <textarea rows="2" class="form-control text-start" id="organizationAddress" name="address">
+                                </textarea>
+                            </div>                                                 
+                            <button type="submit" class="btn btn-primary">Add Organization</button> 
+                        </form>                
+                    </div>                   
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col m-4">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Address</th>                            
+                            <th>Edit</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="organization : ${organizations}">
+                            <td th:text="${organization.id}">id</td>
+                            <td th:text="${organization.name}">name</td>
+                            <td th:text="${organization.description}">Description</td>
+                            <td th:text="${organization.address}">Address</td>                            
+                            <td><a th:attr="href=${'#editModal'+organization.id}" data-toggle="modal" th:data-row="${organization}">Edit</a></td>
+                            <!--*****************Edit Organization Modal******************-->                       
+                            <div th:each="organization : ${organizations}" class="modal" th:attr="id=${'editModal'+ organization.id}" tabindex="-1" role="dialog">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Edit Organization</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+
+                                            <form type="form" action="editOrganization" method="POST">
+                                                <div class="form-group">
+                                                    <label for="organizationName">Name</label>
+                                                    <input type="text" class="form-control" id="organizationName" name="name" 
+                                                           th:value="${organization.name}"/>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label  for="organizationDescription">Description</label>
+                                                    <textarea rows="2" class="form-control text-start" id="organizationDescription" name="description" 
+                                                              th:text="${organization.description}">
+                                                        Description
+                                                    </textarea>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label  for="organizationAddress">Address</label>
+                                                    <textarea rows="2" class="form-control text-start" id="organizationAddress" name="address" 
+                                                              th:text="${organization.address}">
+                                                        Address
+                                                    </textarea>
+                                                </div>  
+                                                <input type="hidden" name="id" th:value="${organization.id}"/>
+                                                <button type="submit" class="btn btn-primary">Update Organization</button> 
+                                            </form>                
+                                        </div>                                       
+                                    </div>
+                                </div>
+                            </div>
+                            <td><a href="#" th:attr="href=${'#deleteModal'+organization.id}" data-toggle="modal" >Delete</a></td>
+                            <!--**********************Delete Modal**********************************-->
+                            <div class="modal" th:each="organization : ${organizations}" th:attr="id=${'deleteModal'+ organization.id}" tabindex="-1" role="dialog">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Deletion Confirmation</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Would you like to proceed with deletion?</p>                                            
+                                        </div>
+                                        <div class="modal-footer">
+                                            <form type="form" action="deleteOrganization" method="POST">
+                                                <input type="hidden" name="id" th:value="${organization.id}"/>
+                                                <button type="submit" class="btn btn-primary">Yes</button> 
+<!--                                                 <button type="submit" class="btn btn-primary" th:href="@{/deleteOrganization(id=${organization.id})}">Yes</button>-->
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        </div>
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+                integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+                integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+                integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+    </body>
+
+</html>

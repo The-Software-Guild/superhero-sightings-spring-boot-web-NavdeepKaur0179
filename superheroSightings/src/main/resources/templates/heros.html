@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+              integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+            <title>SuperHeroSighting</title>
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col text-center">
+                    <h1>Super Hero Sighting</h1>
+                </div>
+            </div>
+            <div class="row m-4 ">
+                <div class="col text-center m-3">
+                    <a href="heros" class="btn btn-outline-primary btn-lg">Super Heroes</a>
+                </div>
+                <div class="col text-center m-3">
+                    <a href="locations" class="btn btn-outline-primary btn-lg">Locations</a>
+                </div>
+                <div class="col text-center m-3">
+                    <a href="organizations" class="btn btn-outline-primary btn-lg">Organizations</a>
+                </div>
+                <div class="col text-center m-3">
+                    <a href="sightings" class="btn btn-outline-primary btn-lg">Sightings</a>
+                </div>
+            </div>
+        </div>
+        <!-- Button trigger modal --><div class="row">
+            <div class="col-10"></div>
+            <div class="col-2">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addHeroModal">
+                    Add Hero
+                </button>
+            </div>
+
+        </div>
+        <!--*****************Add Hero Modal******************-->
+        <div class="modal" id="addHeroModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Hero</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+
+                        <form type="form" action="addHero" method="POST">
+                            <div class="form-group">
+                                <label for="heroName">Name</label>
+                                <input type="text" class="form-control" id="heroName" name="name"/>
+                            </div>
+                            <div class="form-group">
+                                <label  for="heroDescription">Description</label>
+                                <textarea rows="2" class="form-control text-start" id="heroDescription" name="description">
+                                </textarea>
+                            </div>
+                            <div class="form-group">
+                                <label  for="HeroOrganization">Organization</label>
+                                <select multiple class="form-control" name="organizationId">
+                                    <option th:each="organization : ${organizations}"
+                                            th:value="${organization.id}"
+                                            th:text="${organization.name}">Organization</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label  for="heroSuperPower">SuperPower</label>
+                                <input type="text" class="form-control" id="heroSuperPower" name="superPower"/>
+                            </div>                       
+                            <button type="submit" class="btn btn-primary">Add Hero</button> 
+                        </form>                
+                    </div>                   
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col m-4">
+                <!--                    <h3>Heros</h3>-->
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Organizations </th>
+                            <th>SuperPower</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="hero : ${heros}">
+                            <td th:text="${hero.id}">id</td>
+                            <td th:text="${hero.name}">name</td>
+                            <td th:text="${hero.description}">Description</td>
+                            <td><span th:each="a, heroOrganization : ${hero.organizations}" th:text="!${heroOrganization.last} ? ${a.name} + ',': ${a.name}"></span></td>
+                            <td th:text="${hero.superPower}">SuperPower</td>
+                            <td><a th:attr="href=${'#editModal'+hero.id}" data-toggle="modal" th:data-row="${hero}">Edit</a></td>
+                            <div th:each="hero : ${heros}" class="modal" th:attr="id=${'editModal'+ hero.id}" tabindex="-1" role="dialog">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Edit Hero</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+
+                                            <form type="form" action="editHero" method="POST">
+                                                <div class="form-group">
+                                                    <label for="heroName">Name</label>
+                                                    <input type="text" class="form-control" id="heroName" name="name" 
+                                                           th:value="${hero.name}"/>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label  for="heroDescription">Description</label>
+                                                    <textarea rows="2" class="form-control text-start" id="heroDescription" name="description" 
+                                                              th:text="${hero.description}">
+                                                        Description
+                                                    </textarea>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label  for="heroOrganization">Organization</label>
+                                                    <select multiple class="form-control" name="organizationId">
+                                                        <option th:each="organization : ${organizations}"
+                                                                th:value="${organization.id}"
+                                                                th:text="${organization.name}"
+                                                                th:selected="${hero.organizations.contains(organization)}">Organization</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label  for="heroSuperPower">SuperPower</label>
+                                                    <input type="text" class="form-control" id="heroSuperPower" name="superPower" th:value="${hero.superPower}"/>
+                                                </div>  
+                                                <input type="hidden" name="id" th:value="${hero.id}"/>
+                                                <button type="submit" class="btn btn-primary">Update Hero</button> 
+                                            </form>                
+                                        </div>                                       
+                                    </div>
+                                </div>
+                            </div>
+                            <td><a href="#" th:attr="href=${'#deleteModal'+hero.id}" data-toggle="modal" >Delete</a></td>
+                            <!--**********************Delete Modal**********************************-->
+                            <div class="modal" th:each="hero : ${heros}" th:attr="id=${'deleteModal'+ hero.id}" tabindex="-1" role="dialog">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Deletion Confirmation</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Would you like to proceed with deletion?</p>                                            
+                                        </div>
+                                        <div class="modal-footer">
+                                            <form type="form" action="deleteHero" method="POST">
+                                                <input type="hidden" name="id" th:value="${hero.id}"/>
+                                                <button type="submit" class="btn btn-primary">Yes</button> 
+<!--                                            <button type="submit" class="btn btn-primary" th:href="@{/deleteHero(id=${hero.id})}">Yes</button>-->
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        </div>
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+                integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+                integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+                integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+    </body>
+
+</html>

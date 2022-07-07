@@ -5,18 +5,19 @@
  */
 package com.navdeep.superheroSightings.controllers;
 
-import com.navdeep.superheroSightings.dao.HeroDao;
-import com.navdeep.superheroSightings.dao.LocationDao;
-import com.navdeep.superheroSightings.dao.OrganizationDao;
-import com.navdeep.superheroSightings.dao.SightingDao;
 import com.navdeep.superheroSightings.entities.Location;
+import com.navdeep.superheroSightings.service.ClassDataValidationException;
+import com.navdeep.superheroSightings.service.ClassEmptyListException;
+import com.navdeep.superheroSightings.service.SuperHeroServiceLayer;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  *
@@ -26,35 +27,51 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class LocationController {
 
     @Autowired
-    HeroDao heroDao;
+    final SuperHeroServiceLayer superHeroServiceLayer;
 
-    @Autowired
-    LocationDao locationDao;
+    public LocationController(SuperHeroServiceLayer superHeroServiceLayer) {
+        this.superHeroServiceLayer = superHeroServiceLayer;
+    }
 
-    @Autowired
-    OrganizationDao organizationDao;
-
-    @Autowired
-    SightingDao sightingDao;
+//    @Autowired
+//    HeroDao heroDao;
+//
+//    @Autowired
+//    LocationDao locationDao;
+//
+//    @Autowired
+//    OrganizationDao organizationDao;
+//
+//    @Autowired
+//    SightingDao sightingDao;
+    String exceptionErrorMessage = "";
 
     @GetMapping("locations")
     public String getLocations(Model model) {
-        List<Location> locations = locationDao.getAllLocations();
-        model.addAttribute("locations", locations);
-        return "locations";
+        try {
+            List<Location> locations = superHeroServiceLayer.getAllLocations();
+            model.addAttribute("locations", locations);
+            return "locations";
+        } catch (ClassEmptyListException e) {
+            exceptionErrorMessage = e.getMessage();
+            return "redirect:/errorPage";
+        }
+
     }
 
     @PostMapping("/addLocation")
+    @ResponseStatus(HttpStatus.CREATED)
     public String addLocation(Location location) {
-        locationDao.addLocation(location);
-        return "redirect:/locations";
+        try {
+
+            superHeroServiceLayer.addLocation(location);
+            return "redirect:/locations";
+        } catch (ClassDataValidationException e) {
+            exceptionErrorMessage = e.getMessage();
+            return "redirect:/errorPage";
+        }
     }
 
-//    @GetMapping("location")
-//    public String hero(Integer id)
-//    {
-//        return "redirect:/heros";
-//    }  
     @PostMapping("editLocation")
     public String editLocation(HttpServletRequest request) {
         String locationName = request.getParameter("name");
@@ -69,13 +86,25 @@ public class LocationController {
         location.setDescription(locationDescription);
         location.setAddress(locationAddress);
         location.setLatlong(locationLatLong);
-        locationDao.updateLocation(location);
-        return "redirect:/locations";
+        try {
+            superHeroServiceLayer.updateLocation(location);
+            return "redirect:/locations";
+
+        } catch (ClassDataValidationException e) {
+             exceptionErrorMessage = e.getMessage();
+            return "redirect:/errorPage";
+        }
     }
 
     @PostMapping("/deleteLocation")
     public String deleteLocation(HttpServletRequest request) {
-        locationDao.deleteLocationById(Integer.parseInt(request.getParameter("id")));
+        superHeroServiceLayer.deleteLocationById(Integer.parseInt(request.getParameter("id")));
         return "redirect:/locations";
+    }
+
+    @GetMapping("/errorPage")
+    public String errorPage(Model model) {
+        model.addAttribute("exceptionErrorMessage", exceptionErrorMessage);
+        return "errorpage";
     }
 }

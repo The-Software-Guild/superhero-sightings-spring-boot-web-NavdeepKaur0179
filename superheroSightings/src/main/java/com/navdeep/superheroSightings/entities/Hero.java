@@ -27,6 +27,7 @@ public class Hero {
     @NotBlank(message = "SuperPower must not be empty.")
     @Size(max = 50, message="Name must be less than 50 characters.")
     private String superPower;
+    
     private List<Organization> organizations;
 
     public int getId() {

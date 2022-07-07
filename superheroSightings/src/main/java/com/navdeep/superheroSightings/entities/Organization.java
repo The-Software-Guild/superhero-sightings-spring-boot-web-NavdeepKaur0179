@@ -5,8 +5,9 @@
  */
 package com.navdeep.superheroSightings.entities;
 
-import java.util.List;
 import java.util.Objects;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -14,8 +15,16 @@ import java.util.Objects;
  */
 public class Organization {
     private int id;
+    
+    @NotBlank(message = "Name must not be empty.")
+    @Size(max = 30, message="Name must be less than 30 characters.")
     private String name;
+    
+    @Size(max = 255, message="Description must be less than 255 characters.")
     private String description;
+    
+    @NotBlank(message = "Address must not be empty.")
+    @Size(max = 150, message="Address must be less than 150 characters.")
     private String address;   
 
     public int getId() {

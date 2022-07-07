@@ -5,15 +5,20 @@
  */
 package com.navdeep.superheroSightings.controllers;
 
-import com.navdeep.superheroSightings.dao.HeroDao;
-import com.navdeep.superheroSightings.dao.LocationDao;
-import com.navdeep.superheroSightings.dao.OrganizationDao;
-import com.navdeep.superheroSightings.dao.SightingDao;
 import com.navdeep.superheroSightings.entities.Hero;
 import com.navdeep.superheroSightings.entities.Organization;
+import com.navdeep.superheroSightings.service.ClassDataValidationException;
+import com.navdeep.superheroSightings.service.ClassEmptyListException;
+import com.navdeep.superheroSightings.service.ClassNoSuchRecordException;
+import com.navdeep.superheroSightings.service.SuperHeroServiceLayer;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,67 +31,110 @@ import org.springframework.web.bind.annotation.PostMapping;
  */
 @Controller
 public class HeroController {
+
     @Autowired
-    HeroDao heroDao;
-    
-    @Autowired
-    LocationDao locationDao;
-    
-    @Autowired
-    OrganizationDao organizationDao;
-    
-    @Autowired
-    SightingDao sightingDao;
-    
-    @GetMapping("heros")
-    public String getHeros(Model model)
-    {
-       List<Hero> heros=heroDao.getAllHeros();
-       model.addAttribute("heros", heros);
-       List<Organization> organizations=organizationDao.getAllOrganizations();
-       model.addAttribute("organizations",organizations);
-       return "heros"; 
+    final SuperHeroServiceLayer superHeroServiceLayer;
+
+    public HeroController(SuperHeroServiceLayer superHeroServiceLayer) {
+        this.superHeroServiceLayer = superHeroServiceLayer;
     }
-    
+//    @Autowired
+//    HeroDao heroDao;
+//
+//    @Autowired
+//    LocationDao locationDao;
+//
+//    @Autowired
+//    OrganizationDao organizationDao;
+//
+//    @Autowired
+//    SightingDao sightingDao;
+
+    Set<ConstraintViolation<Hero>> violations = new HashSet<>();
+    String exceptionErrorMessage = "";
+
+    @GetMapping("heros")
+    public String getHeros(Model model) {
+        try {
+            List<Hero> heros = superHeroServiceLayer.getAllHeros();
+            model.addAttribute("heros", heros);
+        } catch (ClassEmptyListException e) {
+            exceptionErrorMessage = e.getMessage();
+            return "redirect/errorPAge";
+        }
+        try {
+            List<Organization> organizations = superHeroServiceLayer.getAllOrganizations();
+            model.addAttribute("organizations", organizations);
+        } catch (ClassEmptyListException e) {
+            exceptionErrorMessage = e.getMessage();
+            return "redirect/errorPAge";
+        }
+        model.addAttribute("errors", violations);
+        return "heros";
+    }
+
     @PostMapping("/addHero")
-    public String addHero(Hero hero,HttpServletRequest request)
-    {
-        String[] organizationIds=request.getParameterValues("organizationId");        
-        List<Organization> organizations=new ArrayList<>();
-        for (String organizationId : organizationIds) {
-            organizations.add(organizationDao.getOrganizationById(Integer.parseInt(organizationId)));
+    public String addHero(Hero hero, HttpServletRequest request) {
+        String[] organizationIds = request.getParameterValues("organizationId");
+        List<Organization> organizations = new ArrayList<>();
+        try {
+            for (String organizationId : organizationIds) {
+                organizations.add(superHeroServiceLayer.getOrganizationById(Integer.parseInt(organizationId)));
+            }
+        } catch (ClassNoSuchRecordException e) {
+            exceptionErrorMessage = e.getMessage();
+            return "redirect/errorPAge";
         }
         hero.setOrganizations(organizations);
-        heroDao.addHero(hero);
-        return "redirect:/heros";
+        //validate inputs before sending to Dao
+        Validator validate = Validation.buildDefaultValidatorFactory().getValidator();
+        violations = validate.validate(hero);
+        if (violations.isEmpty()) {
+            try {
+                superHeroServiceLayer.addHero(hero);
+            } catch (ClassDataValidationException e) {
+                exceptionErrorMessage = e.getMessage();
+                return "redirect/errorPAge";
+            }
+            return "redirect:/heros";
+        }
+        return "heros";
     }
+
     @PostMapping("editHero")
     public String editHero(HttpServletRequest request) {
-        String[] organizationIds=request.getParameterValues("organizationId");
-        String heroName=request.getParameter("name");
-        String heroDescription=request.getParameter("description");
-        String superPower=request.getParameter("superPower");
-        String heroId=request.getParameter("id");
-        
+        String[] organizationIds = request.getParameterValues("organizationId");
+        String heroName = request.getParameter("name");
+        String heroDescription = request.getParameter("description");
+        String superPower = request.getParameter("superPower");
+        String heroId = request.getParameter("id");
+
         List<Organization> organizations = new ArrayList<>();
-        for (String organizationId : organizationIds) {
-            Organization organization=organizationDao.getOrganizationById(Integer.parseInt(organizationId));
-            organizations.add(organization);
+        try {
+            for (String organizationId : organizationIds) {
+                Organization organization = superHeroServiceLayer.getOrganizationById(Integer.parseInt(organizationId));
+                organizations.add(organization);
+            }
+        } catch (ClassNoSuchRecordException e) {
+            exceptionErrorMessage = e.getMessage();
+            return "redirect/errorPAge";
         }
-        Hero hero=new Hero();
+        Hero hero = new Hero();
         hero.setId(Integer.parseInt(heroId));
         hero.setName(heroName);
         hero.setDescription(heroDescription);
         hero.setSuperPower(superPower);
         hero.setOrganizations(organizations);
-        heroDao.updateHero(hero);
+        try {
+            superHeroServiceLayer.updateHero(hero);
+        } catch (ClassDataValidationException e) {
+        }
         return "redirect:/heros";
     }
-    
+
     @PostMapping("/deleteHero")
-    public String deleteHero(HttpServletRequest request)
-    {
-        heroDao.deleteHeroById(Integer.parseInt(request.getParameter("id")));
+    public String deleteHero(HttpServletRequest request) {
+        superHeroServiceLayer.deleteHeroById(Integer.parseInt(request.getParameter("id")));
         return "redirect:/heros";
     }
 }

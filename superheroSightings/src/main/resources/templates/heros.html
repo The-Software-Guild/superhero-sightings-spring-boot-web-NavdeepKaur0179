@@ -35,6 +35,7 @@
                 </div>
             </div>
         </div>
+
         <!-- Button trigger modal --><div class="row">
             <div class="col-10"></div>
             <div class="col-2">
@@ -45,42 +46,49 @@
 
         </div>
         <!--*****************Add Hero Modal******************-->
-        <div class="modal" id="addHeroModal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Add Hero</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
+        <div>
 
-                        <form type="form" action="addHero" method="POST">
-                            <div class="form-group">
-                                <label for="heroName">Name</label>
-                                <input type="text" class="form-control" id="heroName" name="name"/>
-                            </div>
-                            <div class="form-group">
-                                <label  for="heroDescription">Description</label>
-                                <textarea rows="2" class="form-control text-start" id="heroDescription" name="description">
-                                </textarea>
-                            </div>
-                            <div class="form-group">
-                                <label  for="HeroOrganization">Organization</label>
-                                <select multiple class="form-control" name="organizationId">
-                                    <option th:each="organization : ${organizations}"
-                                            th:value="${organization.id}"
-                                            th:text="${organization.name}">Organization</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label  for="heroSuperPower">SuperPower</label>
-                                <input type="text" class="form-control" id="heroSuperPower" name="superPower"/>
-                            </div>                       
-                            <button type="submit" class="btn btn-primary">Add Hero</button> 
-                        </form>                
-                    </div>                   
+            <div class="modal" id="addHeroModal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Add Hero</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                         <div class="col m-1 text-center" 
+                                 th:if="${!errors.isEmpty()}">
+                                <p class="alert alert-danger" th:each="error : ${errors}" 
+                                   th:text="${error.message}">Error message</p>
+                            </div> 
+                        <div class="modal-body">                             
+                            <form type="form" action="addHero" method="POST">
+                                <div class="form-group">
+                                    <label for="heroName">Name</label>
+                                    <input type="text" class="form-control" id="heroName" name="name"/>
+                                </div>
+                                <div class="form-group">
+                                    <label  for="heroDescription">Description</label>
+                                    <textarea rows="2" class="form-control text-start" id="heroDescription" name="description">
+                                    </textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label  for="HeroOrganization">Organization</label>
+                                    <select multiple class="form-control" name="organizationId">
+                                        <option th:each="organization : ${organizations}"
+                                                th:value="${organization.id}"
+                                                th:text="${organization.name}">Organization</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label  for="heroSuperPower">SuperPower</label>
+                                    <input type="text" class="form-control" id="heroSuperPower" name="superPower"/>
+                                </div>                       
+                                <button type="submit" class="btn btn-primary">Add Hero</button> 
+                            </form>                
+                        </div>                   
+                    </div>
                 </div>
             </div>
         </div>
@@ -124,6 +132,10 @@
                                                     <label for="heroName">Name</label>
                                                     <input type="text" class="form-control" id="heroName" name="name" 
                                                            th:value="${hero.name}"/>
+                                                    <!--                                                    <div th:if="${#fields.hasErrors('hero.name')}">
+                                                                                                            <p th:each="error : ${#fields.errors('hero.name')}" 
+                                                                                                               class="alert alert-danger" th:text="${error}"> name </p>
+                                                                                                        </div>-->
                                                 </div>
                                                 <div class="form-group">
                                                     <label  for="heroDescription">Description</label>
@@ -170,8 +182,8 @@
                                             <form type="form" action="deleteHero" method="POST">
                                                 <input type="hidden" name="id" th:value="${hero.id}"/>
                                                 <button type="submit" class="btn btn-primary">Yes</button> 
-<!--                                            <button type="submit" class="btn btn-primary" th:href="@{/deleteHero(id=${hero.id})}">Yes</button>-->
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                                                <!--                                            <button type="submit" class="btn btn-primary" th:href="@{/deleteHero(id=${hero.id})}">Yes</button>-->
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
                                             </form>
                                         </div>
                                     </div>

@@ -12,7 +12,7 @@ import com.navdeep.superheroSightings.dao.SightingDao;
 import com.navdeep.superheroSightings.entities.Hero;
 import com.navdeep.superheroSightings.entities.Location;
 import com.navdeep.superheroSightings.entities.Sighting;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +60,7 @@ public class SightingController {
         Sighting sighting = new Sighting();
         sighting.setHero(hero);
         sighting.setLocation(location);
-        sighting.setDate(LocalDate.parse(request.getParameter("date")));
+        sighting.setDate(LocalDateTime.parse(request.getParameter("date")));
         sighting.setDescription(request.getParameter("description"));
         sightingDao.addSighting(sighting);
         return "redirect:/sightings";
@@ -73,7 +73,7 @@ public class SightingController {
         Location location = locationDao.getLocationById(Integer.parseInt(locationId));
         String heroId = request.getParameter("heroId");
         Hero hero = heroDao.getHeroById(Integer.parseInt(heroId));
-        LocalDate date = LocalDate.parse(request.getParameter("date"));
+        LocalDateTime date = LocalDateTime.parse(request.getParameter("date"));
 
         String sightingDescription = request.getParameter("description");
 

@@ -8,7 +8,7 @@ package com.navdeep.superheroSightings.dao;
 import com.navdeep.superheroSightings.entities.Hero;
 import com.navdeep.superheroSightings.entities.Location;
 import com.navdeep.superheroSightings.entities.Sighting;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -23,6 +23,6 @@ public interface SightingDao {
     void deleteSightingById(int id);
     List<Sighting> getAllSightingByLocation(Location location);
     List<Location> getAllLocationsHeroSeen(Hero hero);
-    List<Sighting> getAllSightingByDate(LocalDate date);
+    List<Sighting> getAllSightingByDate(LocalDateTime date);
     
 }

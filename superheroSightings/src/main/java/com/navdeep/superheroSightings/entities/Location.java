@@ -1,4 +1,4 @@
-/*
+    /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -27,9 +27,13 @@ public class Location {
     @Size(max = 150, message="Description must be less than 150 characters.")
     private String address;
     
-    @NotBlank(message = "LatLong must not be empty.")
-    @Size(max = 50, message="Latitude Longitude must be less than 50 characters.")
-    private String latlong;
+    @NotBlank(message = "Latitude must not be empty.")
+    @Size(max = 50, message="Latitude must be less than 50 characters.")
+    private String latitude;
+    
+     @NotBlank(message = "Longitude must not be empty.")
+    @Size(max = 50, message="Longitude Longitude must be less than 50 characters.")
+    private String longitude;
 
     public int getId() {
         return id;
@@ -63,22 +67,31 @@ public class Location {
         this.address = address;
     }
 
-    public String getLatlong() {
-        return latlong;
+    public String getLatitude() {
+        return latitude;
     }
 
-    public void setLatlong(String latlong) {
-        this.latlong = latlong;
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
     }
 
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 97 * hash + this.id;
-        hash = 97 * hash + Objects.hashCode(this.name);
-        hash = 97 * hash + Objects.hashCode(this.description);
-        hash = 97 * hash + Objects.hashCode(this.address);
-        hash = 97 * hash + Objects.hashCode(this.latlong);
+        hash = 83 * hash + this.id;
+        hash = 83 * hash + Objects.hashCode(this.name);
+        hash = 83 * hash + Objects.hashCode(this.description);
+        hash = 83 * hash + Objects.hashCode(this.address);
+        hash = 83 * hash + Objects.hashCode(this.latitude);
+        hash = 83 * hash + Objects.hashCode(this.longitude);
         return hash;
     }
 
@@ -106,10 +119,14 @@ public class Location {
         if (!Objects.equals(this.address, other.address)) {
             return false;
         }
-        if (!Objects.equals(this.latlong, other.latlong)) {
+        if (!Objects.equals(this.latitude, other.latitude)) {
+            return false;
+        }
+        if (!Objects.equals(this.longitude, other.longitude)) {
             return false;
         }
         return true;
     }
+
     
 }

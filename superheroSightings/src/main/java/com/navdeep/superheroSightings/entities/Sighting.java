@@ -5,7 +5,7 @@
  */
 package com.navdeep.superheroSightings.entities;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
@@ -28,7 +28,7 @@ public class Sighting {
     private String description;
     
     @FutureOrPresent
-    private LocalDate date;   
+    private LocalDateTime date;   
 
     public int getId() {
         return id;
@@ -62,22 +62,22 @@ public class Sighting {
         this.description = description;
     }
 
-    public LocalDate getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 53 * hash + this.id;
-        hash = 53 * hash + Objects.hashCode(this.location);
-        hash = 53 * hash + Objects.hashCode(this.hero);
-        hash = 53 * hash + Objects.hashCode(this.description);
-        hash = 53 * hash + Objects.hashCode(this.date);
+        hash = 17 * hash + this.id;
+        hash = 17 * hash + Objects.hashCode(this.location);
+        hash = 17 * hash + Objects.hashCode(this.hero);
+        hash = 17 * hash + Objects.hashCode(this.description);
+        hash = 17 * hash + Objects.hashCode(this.date);
         return hash;
     }
 
@@ -111,5 +111,6 @@ public class Sighting {
         return true;
     }
 
-    
+ 
+   
 }

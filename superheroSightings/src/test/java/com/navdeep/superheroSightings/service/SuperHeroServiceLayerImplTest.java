@@ -9,11 +9,13 @@ import com.navdeep.superheroSightings.dao.HeroDao;
 import com.navdeep.superheroSightings.dao.LocationDao;
 import com.navdeep.superheroSightings.dao.OrganizationDao;
 import com.navdeep.superheroSightings.dao.SightingDao;
+import com.navdeep.superheroSightings.dao.SuperPowerDao;
 import com.navdeep.superheroSightings.entities.Hero;
 import com.navdeep.superheroSightings.entities.Location;
 import com.navdeep.superheroSightings.entities.Organization;
 import com.navdeep.superheroSightings.entities.Sighting;
-import java.time.LocalDate;
+import com.navdeep.superheroSightings.entities.SuperPower;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.AfterAll;
@@ -25,21 +27,41 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 /**
  *
  * @author kaurn
  */
+@SpringBootTest
 public class SuperHeroServiceLayerImplTest {
 
+    @Autowired
     private SuperHeroServiceLayer serviceLayer;
 
+    @Autowired
+    HeroDao heroDao;
+
+    @Autowired
+    OrganizationDao organizationDao;
+
+    @Autowired
+    LocationDao locationDao;
+
+    @Autowired
+    SightingDao sightingDao;
+
+    @Autowired
+    SuperPowerDao superPowerDao;
+
     public SuperHeroServiceLayerImplTest() {
-        HeroDao heroDao = new ClassHeroDaoStubImpl();;
-        OrganizationDao organizationDao = new ClassOrganizationDaoStubImpl();
-        LocationDao locationDao = new ClassLocationDaoStubImpl();
-        SightingDao sightingDao = new ClassSightingDaoStubImpl();
-        serviceLayer = new SuperHeroServiceLayerImpl(heroDao, locationDao, organizationDao, sightingDao);
+//        heroDao = new HeroDaoDB();;
+//        organizationDao = new OrganizationDaoDB();
+//        locationDao = new LocationDaoDB();
+//        sightingDao = new SightingDaoDB();
+//        superPowerDao=new SuperPowerDaoDB();
+        serviceLayer = new SuperHeroServiceLayerImpl(heroDao, locationDao, organizationDao, sightingDao, superPowerDao);
     }
 
     @BeforeAll
@@ -51,7 +73,38 @@ public class SuperHeroServiceLayerImplTest {
     }
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws Exception {
+        if (heroDao.getAllHeros().size() > 0) {
+            List<Hero> heros = serviceLayer.getAllHeros();
+            for (Hero hero : heros) {
+                serviceLayer.deleteHeroById(hero.getId());
+            }
+        }
+        if (locationDao.getAllLocations().size() > 0) {
+            List<Location> locations = serviceLayer.getAllLocations();
+            for (Location location : locations) {
+                serviceLayer.deleteLocationById(location.getId());
+            }
+        }
+        if (organizationDao.getAllOrganizations().size() > 0) {
+            List<Organization> organizations = serviceLayer.getAllOrganizations();
+            for (Organization organization : organizations) {
+                serviceLayer.deleteOrganizationbyId(organization.getId());
+            }
+        }
+
+        if (sightingDao.getAllSightings().size() > 0) {
+            List<Sighting> sightings = serviceLayer.getAllSightings();
+            for (Sighting sighting : sightings) {
+                serviceLayer.deleteSightingById(sighting.getId());
+            }
+        }
+        if (superPowerDao.getAllSuperPowers().size() > 0) {
+            List<SuperPower> superPowers = serviceLayer.getAllSuperPowers();
+            for (SuperPower superPower : superPowers) {
+                serviceLayer.deleteSuperPowerById(superPower.getId());
+            }
+        }
     }
 
     @AfterEach
@@ -61,12 +114,11 @@ public class SuperHeroServiceLayerImplTest {
     @Test
     public void testGetLocationById() throws Exception {
         Location location = new Location();
-        location.setId(1);
         location.setName("Test Location name");
         location.setDescription("Test Location description");
         location.setAddress("Test Location address");
-        location.setLatlong("Test Location latlong");
-
+        location.setLatitude("Test Location Latitude");
+        location.setLongitude("Test Location Latitude");
         Location shouldBeTestLocation = serviceLayer.getLocationById(1);
         assertNotNull(shouldBeTestLocation);
         assertEquals(location, shouldBeTestLocation);
@@ -84,11 +136,11 @@ public class SuperHeroServiceLayerImplTest {
     @Test
     public void testGetAllLocations() throws Exception {
         Location location = new Location();
-        location.setId(1);
         location.setName("Test Location name");
         location.setDescription("Test Location description");
         location.setAddress("Test Location address");
-        location.setLatlong("Test Location latlong");
+        location.setLatitude("Test Location Latitude");
+        location.setLongitude("Test Location Latitude");
 
         List<Location> locations = serviceLayer.getAllLocations();
         assertEquals(1, locations.size());
@@ -108,11 +160,11 @@ public class SuperHeroServiceLayerImplTest {
     @Test
     public void testAddValidLocation() throws Exception {
         Location location = new Location();
-        location.setId(1);
         location.setName("Test Location name");
         location.setDescription("Test Location description");
         location.setAddress("Test Location address");
-        location.setLatlong("Test Location latlong");
+        location.setLatitude("Test Location Latitude");
+        location.setLongitude("Test Location Latitude");
         try {
             serviceLayer.addLocation(location);
         } catch (ClassDataValidationException e) {
@@ -123,10 +175,10 @@ public class SuperHeroServiceLayerImplTest {
     @Test
     public void testAddInValidLocation() throws Exception {
         Location location = new Location();
-        location.setId(1);
         location.setDescription("Test Location description");
         location.setAddress("Test Location address");
-        location.setLatlong("Test Location latlong");
+        location.setLatitude("Test Location Latitude");
+        location.setLongitude("Test Location Latitude");
         try {
             serviceLayer.addLocation(location);
         } catch (ClassDataValidationException e) {
@@ -151,20 +203,25 @@ public class SuperHeroServiceLayerImplTest {
     @Test
     public void testGetHeroById() throws Exception {
         Organization organization = new Organization();
-        organization.setId(1);
         organization.setName("Test Organization Name");
         organization.setDescription("Test Organization description");
         organization.setAddress("Test Organization address");
+        organization = serviceLayer.addOrganization(organization);
 
         List<Organization> organizationList = new ArrayList<>();
         organizationList.add(organization);
 
+        SuperPower power = new SuperPower();
+        power.setSuperPower("test superPower");
+        power.setDescription("Power Description");
+        SuperPower superPowers = serviceLayer.addSuperPower(power);
         Hero testHero = new Hero();
-        testHero.setId(1);
+
         testHero.setName("test Hero Name 1");
         testHero.setDescription("Test Hero Description");
-        testHero.setSuperPower("test SuperPower");
+        testHero.setSuperPowers(superPowers);
         testHero.setOrganizations(organizationList);
+        testHero = serviceLayer.addHero(testHero);
 
         Hero shouldBeTestHero = serviceLayer.getHeroById(1);
         assertNotNull(shouldBeTestHero);
@@ -184,20 +241,25 @@ public class SuperHeroServiceLayerImplTest {
     @Test
     public void testGetAllHeros() throws Exception {
         Organization organization = new Organization();
-        organization.setId(1);
         organization.setName("Test Organization Name");
         organization.setDescription("Test Organization description");
         organization.setAddress("Test Organization address");
+        organization = serviceLayer.addOrganization(organization);
 
         List<Organization> organizationList = new ArrayList<>();
         organizationList.add(organization);
 
+        SuperPower power = new SuperPower();
+        power.setSuperPower("test superPower");
+        power.setDescription("Power Description");
+        SuperPower superPowers = serviceLayer.addSuperPower(power);
         Hero testHero = new Hero();
-        testHero.setId(1);
+
         testHero.setName("test Hero Name 1");
         testHero.setDescription("Test Hero Description");
-        testHero.setSuperPower("test SuperPower");
+        testHero.setSuperPowers(superPowers);
         testHero.setOrganizations(organizationList);
+        testHero = serviceLayer.addHero(testHero);
 
         List<Hero> heroes = serviceLayer.getAllHeros();
         assertEquals(1, heroes.size());
@@ -217,19 +279,23 @@ public class SuperHeroServiceLayerImplTest {
     @Test
     public void testAddValidHero() throws Exception {
         Organization organization = new Organization();
-        organization.setId(1);
         organization.setName("Test Organization Name");
         organization.setDescription("Test Organization description");
         organization.setAddress("Test Organization address");
+        organization = serviceLayer.addOrganization(organization);
 
         List<Organization> organizationList = new ArrayList<>();
         organizationList.add(organization);
 
+        SuperPower power = new SuperPower();
+        power.setSuperPower("test superPower");
+        power.setDescription("Power Description");
+        SuperPower superPowers = serviceLayer.addSuperPower(power);
         Hero testHero = new Hero();
-        testHero.setId(1);
+
         testHero.setName("test Hero Name 1");
         testHero.setDescription("Test Hero Description");
-        testHero.setSuperPower("test SuperPower");
+        testHero.setSuperPowers(superPowers);
         testHero.setOrganizations(organizationList);
 
         try {
@@ -242,18 +308,23 @@ public class SuperHeroServiceLayerImplTest {
     @Test
     public void testAddInValidHero() throws Exception {
         Organization organization = new Organization();
-        organization.setId(1);
         organization.setName("Test Organization Name");
         organization.setDescription("Test Organization description");
         organization.setAddress("Test Organization address");
+        organization = serviceLayer.addOrganization(organization);
 
         List<Organization> organizationList = new ArrayList<>();
         organizationList.add(organization);
 
+        SuperPower power = new SuperPower();
+        power.setSuperPower("test superPower");
+        power.setDescription("Power Description");
+        SuperPower superPowers = serviceLayer.addSuperPower(power);
         Hero testHero = new Hero();
-        testHero.setId(1);
+
+        testHero.setName("test Hero Name 1");
         testHero.setDescription("Test Hero Description");
-        testHero.setSuperPower("test SuperPower");
+        testHero.setSuperPowers(superPowers);
         testHero.setOrganizations(organizationList);
 
         try {
@@ -291,17 +362,16 @@ public class SuperHeroServiceLayerImplTest {
 //    /**
 //     * Test of updateLocation method, of class SuperHeroServiceLayerImpl.
 //     */
-
     /**
      * Test of getOrganizationById method, of class SuperHeroServiceLayerImpl.
      */
     @Test
     public void testGetOrganizationById() throws Exception {
         Organization organization = new Organization();
-        organization.setId(1);
         organization.setName("Test Organization Name");
         organization.setDescription("Test Organization description");
         organization.setAddress("Test Organization address");
+        organization = serviceLayer.addOrganization(organization);
 
         Organization shouldOrganization = serviceLayer.getOrganizationById(1);
         assertNotNull(shouldOrganization);
@@ -322,10 +392,10 @@ public class SuperHeroServiceLayerImplTest {
     @Test
     public void testGetAllOrganizations() throws Exception {
         Organization organization = new Organization();
-        organization.setId(1);
         organization.setName("Test Organization Name");
         organization.setDescription("Test Organization description");
         organization.setAddress("Test Organization address");
+        organization = serviceLayer.addOrganization(organization);
 
         List<Organization> organizations = serviceLayer.getAllOrganizations();
         assertEquals(1, organizations.size());
@@ -346,7 +416,6 @@ public class SuperHeroServiceLayerImplTest {
     @Test
     public void testAddValidOrganization() throws Exception {
         Organization organization = new Organization();
-        organization.setId(1);
         organization.setName("Test Organization Name");
         organization.setDescription("Test Organization description");
         organization.setAddress("Test Organization address");
@@ -360,7 +429,6 @@ public class SuperHeroServiceLayerImplTest {
     @Test
     public void testAddInValidOrganization() throws Exception {
         Organization organization = new Organization();
-        organization.setId(1);
         organization.setDescription("Test Organization description");
         organization.setAddress("Test Organization address");
         try {
@@ -400,34 +468,41 @@ public class SuperHeroServiceLayerImplTest {
     @Test
     public void testGetSighingById() throws Exception {
         Organization organization = new Organization();
-        organization.setId(1);
         organization.setName("Test Organization Name");
         organization.setDescription("Test Organization description");
         organization.setAddress("Test Organization address");
+        organization = serviceLayer.addOrganization(organization);
 
         List<Organization> organizationList = new ArrayList<>();
         organizationList.add(organization);
 
+        SuperPower power = new SuperPower();
+        power.setSuperPower("test superPower");
+        power.setDescription("Power Description");
+        SuperPower superPowers = serviceLayer.addSuperPower(power);
+
         Hero testHero = new Hero();
-        testHero.setId(1);
+
         testHero.setName("test Hero Name 1");
         testHero.setDescription("Test Hero Description");
-        testHero.setSuperPower("test SuperPower");
+        testHero.setSuperPowers(superPowers);
         testHero.setOrganizations(organizationList);
+        testHero = serviceLayer.addHero(testHero);
 
         Location location = new Location();
-        location.setId(1);
         location.setName("Test Location name");
         location.setDescription("Test Location description");
         location.setAddress("Test Location address");
-        location.setLatlong("Test Location latlong");
+        location.setLatitude("Test Location Latitude");
+        location.setLongitude("Test Location Latitude");
+        location = serviceLayer.addLocation(location);
 
         Sighting sighting = new Sighting();
-        sighting.setId(1);
-        sighting.setDate(LocalDate.now());
+        sighting.setDate(LocalDateTime.now());
         sighting.setHero(testHero);
         sighting.setLocation(location);
         sighting.setDescription("Test Sighting description");
+        sighting = serviceLayer.addSighting(sighting);
 
         Sighting shouldSighting = serviceLayer.getSighingById(1);
         assertNotNull(shouldSighting);
@@ -448,34 +523,40 @@ public class SuperHeroServiceLayerImplTest {
     @Test
     public void testGetAllSightings() throws Exception {
         Organization organization = new Organization();
-        organization.setId(1);
         organization.setName("Test Organization Name");
         organization.setDescription("Test Organization description");
         organization.setAddress("Test Organization address");
+        organization = serviceLayer.addOrganization(organization);
 
         List<Organization> organizationList = new ArrayList<>();
         organizationList.add(organization);
 
+        SuperPower power = new SuperPower();
+        power.setSuperPower("test superPower");
+        power.setDescription("Power Description");
+        SuperPower superPowers = serviceLayer.addSuperPower(power);
         Hero testHero = new Hero();
-        testHero.setId(1);
+
         testHero.setName("test Hero Name 1");
         testHero.setDescription("Test Hero Description");
-        testHero.setSuperPower("test SuperPower");
+        testHero.setSuperPowers(superPowers);
         testHero.setOrganizations(organizationList);
+        testHero = serviceLayer.addHero(testHero);
 
         Location location = new Location();
-        location.setId(1);
         location.setName("Test Location name");
         location.setDescription("Test Location description");
         location.setAddress("Test Location address");
-        location.setLatlong("Test Location latlong");
+        location.setLatitude("Test Location Latitude");
+        location.setLongitude("Test Location Latitude");
+        location = serviceLayer.addLocation(location);
 
         Sighting sighting = new Sighting();
-        sighting.setId(1);
-        sighting.setDate(LocalDate.now());
+        sighting.setDate(LocalDateTime.now());
         sighting.setHero(testHero);
         sighting.setLocation(location);
         sighting.setDescription("Test Sighting description");
+        sighting = serviceLayer.addSighting(sighting);
 
         List<Sighting> sightings = serviceLayer.getAllSightings();
         assertEquals(1, sightings.size());
@@ -497,34 +578,41 @@ public class SuperHeroServiceLayerImplTest {
     @Test
     public void testAddValidSighting() throws Exception {
         Organization organization = new Organization();
-        organization.setId(1);
         organization.setName("Test Organization Name");
         organization.setDescription("Test Organization description");
         organization.setAddress("Test Organization address");
+        organization = serviceLayer.addOrganization(organization);
 
         List<Organization> organizationList = new ArrayList<>();
         organizationList.add(organization);
 
+        SuperPower power = new SuperPower();
+        power.setSuperPower("test superPower");
+        power.setDescription("Power Description");
+        SuperPower superPowers = serviceLayer.addSuperPower(power);
+
         Hero testHero = new Hero();
-        testHero.setId(1);
+
         testHero.setName("test Hero Name 1");
         testHero.setDescription("Test Hero Description");
-        testHero.setSuperPower("test SuperPower");
+        testHero.setSuperPowers(superPowers);
         testHero.setOrganizations(organizationList);
+        testHero = serviceLayer.addHero(testHero);
 
         Location location = new Location();
-        location.setId(1);
         location.setName("Test Location name");
         location.setDescription("Test Location description");
         location.setAddress("Test Location address");
-        location.setLatlong("Test Location latlong");
+        location.setLatitude("Test Location Latitude");
+        location.setLongitude("Test Location Latitude");
+        location = serviceLayer.addLocation(location);
 
         Sighting sighting = new Sighting();
-        sighting.setId(1);
-        sighting.setDate(LocalDate.now());
+        sighting.setDate(LocalDateTime.now());
         sighting.setHero(testHero);
         sighting.setLocation(location);
         sighting.setDescription("Test Sighting description");
+        sighting = serviceLayer.addSighting(sighting);
 
         try {
             serviceLayer.addSighting(sighting);
@@ -536,34 +624,41 @@ public class SuperHeroServiceLayerImplTest {
     @Test
     public void testAddInValidSighting() throws Exception {
         Organization organization = new Organization();
-        organization.setId(1);
         organization.setName("Test Organization Name");
         organization.setDescription("Test Organization description");
         organization.setAddress("Test Organization address");
+        organization = serviceLayer.addOrganization(organization);
 
         List<Organization> organizationList = new ArrayList<>();
         organizationList.add(organization);
 
+        SuperPower power = new SuperPower();
+        power.setSuperPower("test superPower");
+        power.setDescription("Power Description");
+        SuperPower superPowers = serviceLayer.addSuperPower(power);
+
         Hero testHero = new Hero();
-        testHero.setId(1);
+
         testHero.setName("test Hero Name 1");
         testHero.setDescription("Test Hero Description");
-        testHero.setSuperPower("test SuperPower");
+        testHero.setSuperPowers(superPowers);
         testHero.setOrganizations(organizationList);
+        testHero = serviceLayer.addHero(testHero);
 
         Location location = new Location();
-        location.setId(1);
         location.setName("Test Location name");
         location.setDescription("Test Location description");
         location.setAddress("Test Location address");
-        location.setLatlong("Test Location latlong");
+        location.setLatitude("Test Location Latitude");
+        location.setLongitude("Test Location Latitude");
+        location = serviceLayer.addLocation(location);
 
         Sighting sighting = new Sighting();
-        sighting.setId(1);
-        sighting.setDate(LocalDate.now());
+        sighting.setDate(LocalDateTime.now());
         sighting.setHero(testHero);
         sighting.setLocation(location);
         sighting.setDescription("Test Sighting description");
+        sighting = serviceLayer.addSighting(sighting);
 
         try {
             serviceLayer.addSighting(sighting);

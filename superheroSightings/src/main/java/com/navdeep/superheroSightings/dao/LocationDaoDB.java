@@ -28,8 +28,8 @@ public class LocationDaoDB implements LocationDao {
     
     final String SELECT_LOCATION_BY_ID = "SELECT * FROM location WHERE id=?";
     final String SELECT_ALL_LOCATIONS = "SELECT * FROM location";
-    final String INSERT_LOCATION = "INSERT INTO location(name,description,address,latlong) VALUES(?,?,?,?)";
-    final String UPDATE_LOCATION = "UPDATE location SET name=?,description=?,address=?,latlong=? WHERE id=?";
+    final String INSERT_LOCATION = "INSERT INTO location(name,description,address,latitude,longitude) VALUES(?,?,?,?,?)";
+    final String UPDATE_LOCATION = "UPDATE location SET name=?,description=?,address=?,latitude=?,longitude=? WHERE id=?";
     final String DELETE_LOCATION_BY_ID = "DELETE FROM location WHERE id=?";
     final String DELETE_SIGHTING_OF_LOCATION_BY_LOCATION_ID = "DELETE FROM sighting WHERE locationId=?";
 
@@ -56,7 +56,8 @@ public class LocationDaoDB implements LocationDao {
                 location.getName(),
                 location.getDescription(),
                 location.getAddress(),
-                location.getLatlong());
+                location.getLatitude(),
+                location.getLongitude());
         int newId = jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", Integer.class);
         location.setId(newId);
         return location;
@@ -68,7 +69,8 @@ public class LocationDaoDB implements LocationDao {
                 location.getName(),
                 location.getDescription(),
                 location.getAddress(),
-                location.getLatlong(),
+                location.getLatitude(),
+                location.getLongitude(),
                 location.getId());
     }
     
@@ -88,7 +90,8 @@ public class LocationDaoDB implements LocationDao {
             location.setName(rs.getString("name"));
             location.setDescription(rs.getString("description"));
             location.setAddress(rs.getString("address"));
-            location.setLatlong(rs.getString("latlong"));
+            location.setLatitude(rs.getString("latitude"));
+            location.setLongitude(rs.getString("longitude"));
             return location;
         }
 

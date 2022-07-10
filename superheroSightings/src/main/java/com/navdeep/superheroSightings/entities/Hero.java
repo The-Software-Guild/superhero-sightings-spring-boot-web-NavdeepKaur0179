@@ -24,9 +24,7 @@ public class Hero {
     @Size(max = 255, message="Description must be less than 255 characters.")
     private String description;
     
-    @NotBlank(message = "SuperPower must not be empty.")
-    @Size(max = 50, message="Name must be less than 50 characters.")
-    private String superPower;
+    private SuperPower superPowers;
     
     private List<Organization> organizations;
 
@@ -42,6 +40,14 @@ public class Hero {
         return name;
     }
 
+    public SuperPower getSuperPowers() {
+        return superPowers;
+    }
+
+    public void setSuperPowers(SuperPower superPowers) {
+        this.superPowers = superPowers;
+    }
+    
     public void setName(String name) {
         this.name = name;
     }
@@ -52,14 +58,6 @@ public class Hero {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getSuperPower() {
-        return superPower;
-    }
-
-    public void setSuperPower(String superPower) {
-        this.superPower = superPower;
     }
 
     public List<Organization> getOrganizations() {
@@ -73,11 +71,11 @@ public class Hero {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 83 * hash + this.id;
-        hash = 83 * hash + Objects.hashCode(this.name);
-        hash = 83 * hash + Objects.hashCode(this.description);
-        hash = 83 * hash + Objects.hashCode(this.superPower);
-        hash = 83 * hash + Objects.hashCode(this.organizations);
+        hash = 47 * hash + this.id;
+        hash = 47 * hash + Objects.hashCode(this.name);
+        hash = 47 * hash + Objects.hashCode(this.description);
+        hash = 47 * hash + Objects.hashCode(this.superPowers);
+        hash = 47 * hash + Objects.hashCode(this.organizations);
         return hash;
     }
 
@@ -102,7 +100,7 @@ public class Hero {
         if (!Objects.equals(this.description, other.description)) {
             return false;
         }
-        if (!Objects.equals(this.superPower, other.superPower)) {
+        if (!Objects.equals(this.superPowers, other.superPowers)) {
             return false;
         }
         if (!Objects.equals(this.organizations, other.organizations)) {
@@ -111,8 +109,4 @@ public class Hero {
         return true;
     }
 
-    
-    
-
-    
 }

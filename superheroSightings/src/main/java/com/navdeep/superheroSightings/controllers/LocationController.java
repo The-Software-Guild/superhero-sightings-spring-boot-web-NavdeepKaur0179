@@ -85,7 +85,8 @@ public class LocationController {
         location.setName(locationName);
         location.setDescription(locationDescription);
         location.setAddress(locationAddress);
-        location.setLatlong(locationLatLong);
+        location.setLatitude("Test Location latitude");
+        location.setLongitude("Test Location longitude");
         try {
             superHeroServiceLayer.updateLocation(location);
             return "redirect:/locations";

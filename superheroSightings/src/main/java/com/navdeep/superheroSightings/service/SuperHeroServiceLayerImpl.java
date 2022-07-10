@@ -9,11 +9,13 @@ import com.navdeep.superheroSightings.dao.HeroDao;
 import com.navdeep.superheroSightings.dao.LocationDao;
 import com.navdeep.superheroSightings.dao.OrganizationDao;
 import com.navdeep.superheroSightings.dao.SightingDao;
+import com.navdeep.superheroSightings.dao.SuperPowerDao;
 import com.navdeep.superheroSightings.entities.Hero;
 import com.navdeep.superheroSightings.entities.Location;
 import com.navdeep.superheroSightings.entities.Organization;
 import com.navdeep.superheroSightings.entities.Sighting;
-import java.time.LocalDate;
+import com.navdeep.superheroSightings.entities.SuperPower;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
@@ -28,12 +30,15 @@ public class SuperHeroServiceLayerImpl implements SuperHeroServiceLayer {
     final private LocationDao locationDao;
     final private OrganizationDao organizationDao;
     final private SightingDao sightingDao;
+    final private SuperPowerDao superPowerDao;
 
-    public SuperHeroServiceLayerImpl(HeroDao heroDao, LocationDao locationDao, OrganizationDao organizationDao, SightingDao sightingDao) {
+    public SuperHeroServiceLayerImpl(HeroDao heroDao, LocationDao locationDao,
+            OrganizationDao organizationDao, SightingDao sightingDao, SuperPowerDao superPowerDao) {
         this.heroDao = heroDao;
         this.locationDao = locationDao;
         this.organizationDao = organizationDao;
         this.sightingDao = sightingDao;
+        this.superPowerDao = superPowerDao;
     }
 
     @Override
@@ -212,7 +217,8 @@ public class SuperHeroServiceLayerImpl implements SuperHeroServiceLayer {
 
     @Override
     public List<Sighting> getAllSightingByLocation(Location location) {
-        return sightingDao.getAllSightingByLocation(location);
+        List<Sighting> sightings = sightingDao.getAllSightingByLocation(location);
+        return sightings;
     }
 
     @Override
@@ -221,14 +227,14 @@ public class SuperHeroServiceLayerImpl implements SuperHeroServiceLayer {
     }
 
     @Override
-    public List<Sighting> getAllSightingByDate(LocalDate date) {
-        return sightingDao.getAllSightingByDate(date);
+    public List<Sighting> getAllSightingByDate(LocalDateTime date) {
+        List<Sighting> sightings = sightingDao.getAllSightingByDate(date);
+        return sightings;
     }
 
     private boolean validateHeroData(Hero hero) throws ClassDataValidationException {
         if (hero.getName() == null || hero.getName().trim().length() == 0
-                || hero.getSuperPower() == null || hero.getSuperPower().trim().length() == 0
-                || hero.getOrganizations().isEmpty()) {
+                || hero.getSuperPowers() == null || hero.getOrganizations().isEmpty()) {
 
             return false;
         }
@@ -238,7 +244,8 @@ public class SuperHeroServiceLayerImpl implements SuperHeroServiceLayer {
     private boolean validateLocationData(Location location) {
         if (location.getName() == null || location.getName().trim().length() == 0
                 || location.getAddress() == null || location.getAddress().trim().length() == 0
-                || location.getLatlong() == null || location.getLatlong().trim().length() == 0) {
+                || location.getLongitude() == null || location.getLongitude().trim().length() == 0
+                || location.getLatitude() == null || location.getLatitude().trim().length() == 0) {
 
             return false;
         }
@@ -254,8 +261,51 @@ public class SuperHeroServiceLayerImpl implements SuperHeroServiceLayer {
     }
 
     private boolean validateSightingData(Sighting sighting) {
-        if (sighting.getLocation()== null 
-                || sighting.getHero() == null || sighting.getDate()==null) {
+        if (sighting.getLocation() == null
+                || sighting.getHero() == null || sighting.getDate() == null) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public SuperPower getSuperPowerById(int id) throws ClassNoSuchRecordException {
+        SuperPower superPower = superPowerDao.getSuperPowerById(id);
+        if (superPower != null) {
+            return superPower;
+        } else {
+            throw new ClassNoSuchRecordException("No such Sighting Exist");
+        }
+    }
+
+    @Override
+    public List<SuperPower> getAllSuperPowers() throws ClassEmptyListException {
+        List<SuperPower> superPowers = superPowerDao.getAllSuperPowers();
+        if (superPowers.isEmpty()) {
+            throw new ClassEmptyListException("Empty Sighting List");
+        }
+        return superPowers;
+    }
+
+    @Override
+    public SuperPower addSuperPower(SuperPower superPower) throws ClassDataValidationException {
+        if (!validateSuperPowerData(superPower)) {
+            throw new ClassDataValidationException(
+                    "ERROR: Field [ name ] is required.");
+        }
+        return superPowerDao.addSuperPower(superPower);
+    }
+
+    @Override
+    public void updateSuperPower(SuperPower superPower) throws ClassDataValidationException {
+    }
+
+    @Override
+    public void deleteSuperPowerById(int id) {
+    }
+
+    private boolean validateSuperPowerData(SuperPower superPower) {
+        if (superPower.getSuperPower() == null || superPower.getSuperPower().trim().length() == 0) {
             return false;
         }
         return true;

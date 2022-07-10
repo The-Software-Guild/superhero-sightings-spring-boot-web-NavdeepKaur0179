@@ -7,6 +7,7 @@ package com.navdeep.superheroSightings.controllers;
 
 import com.navdeep.superheroSightings.entities.Hero;
 import com.navdeep.superheroSightings.entities.Organization;
+import com.navdeep.superheroSightings.entities.SuperPower;
 import com.navdeep.superheroSightings.service.ClassDataValidationException;
 import com.navdeep.superheroSightings.service.ClassEmptyListException;
 import com.navdeep.superheroSightings.service.ClassNoSuchRecordException;
@@ -65,6 +66,8 @@ public class HeroController {
         try {
             List<Organization> organizations = superHeroServiceLayer.getAllOrganizations();
             model.addAttribute("organizations", organizations);
+            List<SuperPower> superPowers = superHeroServiceLayer.getAllSuperPowers();
+            model.addAttribute("superPowers", superPowers);
         } catch (ClassEmptyListException e) {
             exceptionErrorMessage = e.getMessage();
             return "redirect/errorPAge";
@@ -106,11 +109,13 @@ public class HeroController {
         String[] organizationIds = request.getParameterValues("organizationId");
         String heroName = request.getParameter("name");
         String heroDescription = request.getParameter("description");
-        String superPower = request.getParameter("superPower");
+        String superPowerId = request.getParameter("superPowerId");
         String heroId = request.getParameter("id");
-
-        List<Organization> organizations = new ArrayList<>();
+        SuperPower superPower;
+         List<Organization> organizations;
         try {
+            superPower = superHeroServiceLayer.getSuperPowerById(Integer.parseInt(superPowerId));
+            organizations = new ArrayList<>();
             for (String organizationId : organizationIds) {
                 Organization organization = superHeroServiceLayer.getOrganizationById(Integer.parseInt(organizationId));
                 organizations.add(organization);
@@ -123,7 +128,7 @@ public class HeroController {
         hero.setId(Integer.parseInt(heroId));
         hero.setName(heroName);
         hero.setDescription(heroDescription);
-        hero.setSuperPower(superPower);
+        hero.setSuperPowers(superPower);
         hero.setOrganizations(organizations);
         try {
             superHeroServiceLayer.updateHero(hero);

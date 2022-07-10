@@ -5,17 +5,14 @@
  */
 package com.navdeep.superheroSightings.dao;
 
-import com.navdeep.superheroSightings.dao.HeroDaoDB.HeroRowMapper;
 import com.navdeep.superheroSightings.dao.LocationDaoDB.LocationRowMapper;
 import com.navdeep.superheroSightings.entities.Hero;
 import com.navdeep.superheroSightings.entities.Location;
 import com.navdeep.superheroSightings.entities.Sighting;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Date;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -33,7 +30,13 @@ public class SightingDaoDB implements SightingDao {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
-
+    
+    @Autowired
+    HeroDao heroDao;
+    
+    @Autowired
+    LocationDao locationDao;
+    
     final String SELECT_SIGHTING_BY_ID = "SELECT * FROM sighting WHERE id=?";
     final String SELECT_ALL_SIGHTINGS = "SELECT * FROM sighting";
     final String INSERT_SIGHTING = "INSERT INTO sighting(locationId,heroId,date,description) VALUES(?,?,?,?)";
@@ -52,9 +55,7 @@ public class SightingDaoDB implements SightingDao {
     public Sighting getSighingById(int id) {
         try {
             Sighting sighting = jdbcTemplate.queryForObject(SELECT_SIGHTING_BY_ID,
-                    new SightingRowMapper(), id);
-            sighting.setHero(getHeroForSighting(id));
-            sighting.setLocation(getLocationForSighting(id));
+                    new SightingRowMapper(), id);       
             return sighting;
         } catch (DataAccessException e) {
             return null;
@@ -63,11 +64,7 @@ public class SightingDaoDB implements SightingDao {
 
     @Override
     public List<Sighting> getAllSightings() {
-        List<Sighting> sightings= jdbcTemplate.query(SELECT_ALL_SIGHTINGS, new SightingRowMapper());
-        for (Sighting sighting : sightings) {
-            sighting.setHero(getHeroForSighting(sighting.getId()));
-            sighting.setLocation(getLocationForSighting(sighting.getId()));
-        }
+        List<Sighting> sightings= jdbcTemplate.query(SELECT_ALL_SIGHTINGS, new SightingRowMapper());       
         return sightings;
     }
 
@@ -77,12 +74,12 @@ public class SightingDaoDB implements SightingDao {
         jdbcTemplate.update(INSERT_SIGHTING,
                 sighting.getLocation().getId(),
                 sighting.getHero().getId(),
-                sighting.getDate(),
+                Timestamp.valueOf(sighting.getDate()),
                 sighting.getDescription());
 
         int newId = jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", Integer.class);
         sighting.setId(newId);
-        sighting.setHero(getHeroForSighting(newId));
+//        sighting.setHero(getHeroForSighting(newId));
         sighting.setLocation(getLocationForSighting(newId));
         return sighting;
 
@@ -93,7 +90,7 @@ public class SightingDaoDB implements SightingDao {
         jdbcTemplate.update(UPDATE_SIGHTING,
                 sighting.getLocation().getId(),
                 sighting.getHero().getId(),
-                sighting.getDate(),
+                Timestamp.valueOf(sighting.getDate()),
                 sighting.getDescription(),
                 sighting.getId());
     }
@@ -108,11 +105,7 @@ public class SightingDaoDB implements SightingDao {
     public List<Sighting> getAllSightingByLocation(Location location) {
         List<Sighting> sightings= jdbcTemplate.query(SELECT_SIGHTING_BY_LOCATION,
                 new SightingRowMapper(),
-                location.getId());
-        for (Sighting sighting : sightings) {
-            sighting.setHero(getHeroForSighting(sighting.getId()));
-            sighting.setLocation(getLocationForSighting(sighting.getId()));
-        }
+                location.getId());        
         return sightings;
     }
 
@@ -124,22 +117,19 @@ public class SightingDaoDB implements SightingDao {
     }
 
     @Override
-    public List<Sighting> getAllSightingByDate(LocalDate date) {        
+    public List<Sighting> getAllSightingByDate(LocalDateTime date) {        
         List<Sighting> sightings= jdbcTemplate.query(SELECT_ALL_SIGHTING_BY_DATE,
                 new SightingRowMapper(),
-                date);
-        for (Sighting sighting : sightings) {
-            sighting.setHero(getHeroForSighting(sighting.getId()));
-            sighting.setLocation(getLocationForSighting(sighting.getId()));
-        }
+                Timestamp.valueOf(date));        
         return sightings;
     }
 
-    private Hero getHeroForSighting(int id) {
-        return jdbcTemplate.queryForObject(SELECT_HERO_FOR_SIGHTING,
-                new HeroRowMapper(),
-                id);
-    }
+//    private Hero getHeroForSighting(int id) {
+//        return jdbcTemplate.queryForObject(SELECT_HERO_FOR_SIGHTING,
+//                new HeroRowMapper(),
+//                id);
+//        
+//    }
 
     private Location getLocationForSighting(int id) {
         return jdbcTemplate.queryForObject(SELECT_LOCATION_FOR_SIGHTING,
@@ -147,14 +137,16 @@ public class SightingDaoDB implements SightingDao {
                 id);
     }
 
-    public static final class SightingRowMapper implements RowMapper<Sighting> {
+    public final class SightingRowMapper implements RowMapper<Sighting> {
   
         @Override
         public Sighting mapRow(ResultSet rs, int rowNum) throws SQLException {
             Sighting sighting = new Sighting();
              sighting.setId(rs.getInt("id"));
-            sighting.setDate(rs.getDate("date").toLocalDate());
+            sighting.setDate(rs.getTimestamp("date").toLocalDateTime());
             sighting.setDescription(rs.getString("description"));
+            sighting.setHero(heroDao.getHeroById(Integer.parseInt(rs.getString("heroId"))));
+            sighting.setLocation(locationDao.getLocationById(Integer.parseInt(rs.getString("locationId"))));            
             return sighting;
         }
 

@@ -2,15 +2,24 @@ Drop DATABASE if exists SuperheroSightings;
 CREATE DATABASE SuperheroSightings;
 
 USE SuperheroSightings;
-CREATE TABLE hero
+
+CREATE TABLE IF NOT EXISTS superPower
+(
+id INT PRIMARY KEY AUTO_INCREMENT,
+superPower VARCHAR(50) NOT NULL,
+description VARCHAR(255)
+);
+
+CREATE TABLE IF NOT EXISTS hero
 (
 id INT PRIMARY KEY AUTO_INCREMENT,
 `name` VARCHAR(30) NOT NULL,
 description VARCHAR(255),
-superPower VARCHAR(50) NOT NULL
+superPowerId INT NOT NULL,
+FOREIGN KEY(superPowerId) REFERENCES superPower(id)
 );
 
-CREATE TABLE organization
+CREATE TABLE IF NOT EXISTS organization
 (
 id INT PRIMARY KEY AUTO_INCREMENT,
 `name` VARCHAR(30) NOT NULL,
@@ -18,7 +27,7 @@ description VARCHAR(255),
 address VARCHAR(150) NOT NULL
 );
 
-CREATE TABLE hero_organization
+CREATE TABLE IF NOT EXISTS hero_organization
 (
 heroId INT NOT NULL,
 organizationId INT NOT NULL,
@@ -27,21 +36,22 @@ FOREIGN KEY(heroId) REFERENCES hero(id),
 FOREIGN KEY(organizationId) REFERENCES organization(id)
 );
 
-CREATE TABLE location
+CREATE TABLE IF NOT EXISTS location
 (
 id INT PRIMARY KEY AUTO_INCREMENT,
 `name` VARCHAR(30) NOT NULL,
 description VARCHAR(255),
 address VARCHAR(150) NOT NULL,
-latlong varchar(50) NOT NULL
+latitude VARCHAR(50) NOT NULL,
+longitude VARCHAR(50) NOT NULL
 );
 
-CREATE TABLE sighting
+CREATE TABLE IF NOT EXISTS sighting
 (
 id INT PRIMARY KEY AUTO_INCREMENT,
 locationId INT NOT NULL,
 heroId INT NOT NULL,
-`date` DATE NOT NULL,
+`date` DATETIME NOT NULL,
 description VARCHAR(255),
 FOREIGN KEY(locationId) REFERENCES location(id),
 FOREIGN KEY(heroId) REFERENCES hero(id)

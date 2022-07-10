@@ -83,7 +83,11 @@
                                 </div>
                                 <div class="form-group">
                                     <label  for="heroSuperPower">SuperPower</label>
-                                    <input type="text" class="form-control" id="heroSuperPower" name="superPower"/>
+                                    <select  class="form-control" name="superPowerId">
+                                        <option th:each="superPower : ${superPowers}"
+                                                th:value="${superPower.id}"
+                                                th:text="${superPower.name}">SuperPower</option>
+                                    </select>
                                 </div>                       
                                 <button type="submit" class="btn btn-primary">Add Hero</button> 
                             </form>                

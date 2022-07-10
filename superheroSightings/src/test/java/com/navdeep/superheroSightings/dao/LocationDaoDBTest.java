@@ -9,15 +9,16 @@ import com.navdeep.superheroSightings.entities.Hero;
 import com.navdeep.superheroSightings.entities.Location;
 import com.navdeep.superheroSightings.entities.Organization;
 import com.navdeep.superheroSightings.entities.Sighting;
-import java.time.LocalDate;
+import com.navdeep.superheroSightings.entities.SuperPower;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -27,7 +28,7 @@ import org.springframework.boot.test.context.SpringBootTest;
  */
 @SpringBootTest
 public class LocationDaoDBTest {
-    
+
     @Autowired
     HeroDao heroDao;
 
@@ -39,20 +40,24 @@ public class LocationDaoDBTest {
 
     @Autowired
     SightingDao sightingDao;
+
+    @Autowired
+    SuperPowerDao superPowerDao;
+
     public LocationDaoDBTest() {
     }
-    
+
     @BeforeAll
     public static void setUpClass() {
     }
-    
+
     @AfterAll
     public static void tearDownClass() {
     }
-    
+
     @BeforeEach
     public void setUp() {
-         //Empty the database tables
+        //Empty the database tables
         List<Hero> heros = heroDao.getAllHeros();
         for (Hero hero : heros) {
             heroDao.deleteHeroById(hero.getId());
@@ -69,8 +74,12 @@ public class LocationDaoDBTest {
         for (Sighting sighting : sightings) {
             sightingDao.deleteSightingById(sighting.getId());
         }
+        List<SuperPower> superPowers = superPowerDao.getAllSuperPowers();
+        for (SuperPower superPower : superPowers) {
+            superPowerDao.deleteSuperPowerById(superPower.getId());
+        }
     }
-    
+
     @AfterEach
     public void tearDown() {
     }
@@ -80,13 +89,14 @@ public class LocationDaoDBTest {
      */
     @Test
     public void testAddAndGetLocationById() {
-        Location location=new Location();
+        Location location = new Location();
         location.setName("Test Location name");
         location.setDescription("Test Location description");
         location.setAddress("Test Location address");
-        location.setLatlong("Test Location latlong");
-        location=locationDao.addLocation(location);        
-        Location fromDao=locationDao.getLocationById(location.getId());
+        location.setLatitude("Test Location latitude");
+        location.setLongitude("Test Location longitude");
+        location = locationDao.addLocation(location);
+        Location fromDao = locationDao.getLocationById(location.getId());
         assertEquals(location, fromDao);
     }
 
@@ -95,46 +105,48 @@ public class LocationDaoDBTest {
      */
     @Test
     public void testGetAllLocations() {
-        Location location=new Location();
+        Location location = new Location();
         location.setName("Test Location name");
         location.setDescription("Test Location description");
         location.setAddress("Test Location address");
-        location.setLatlong("Test Location latlong");
-        location=locationDao.addLocation(location);        
-        
-        Location location2=new Location();
+        location.setLatitude("Test Location latitude");
+        location.setLongitude("Test Location longitude");
+        location = locationDao.addLocation(location);
+
+        Location location2 = new Location();
         location2.setName("Test Location name 2");
         location2.setDescription("Test Location description 2");
         location2.setAddress("Test Location address 2");
-        location2.setLatlong("Test Location latlong 2");
-        location2=locationDao.addLocation(location2); 
-        
-        List<Location> locations=locationDao.getAllLocations();        
+        location2.setLatitude("Test Location latitude");
+        location2.setLongitude("Test Location longitude");
+        location2 = locationDao.addLocation(location2);
+
+        List<Location> locations = locationDao.getAllLocations();
         assertEquals(2, locations.size());
-        
+
         assertTrue(locations.contains(location));
-        assertTrue(locations.contains(location2));  
+        assertTrue(locations.contains(location2));
     }
 
-    
     /**
      * Test of updateLocation method, of class LocationDaoDB.
      */
     @Test
     public void testUpdateLocation() {
-        Location location=new Location();
+        Location location = new Location();
         location.setName("Test Location name");
         location.setDescription("Test Location description");
         location.setAddress("Test Location address");
-        location.setLatlong("Test Location latlong");
-        location=locationDao.addLocation(location);
-        
-        Location fromDao=locationDao.getLocationById(location.getId());
+        location.setLatitude("Test Location latitude");
+        location.setLongitude("Test Location longitude");
+        location = locationDao.addLocation(location);
+
+        Location fromDao = locationDao.getLocationById(location.getId());
         assertEquals(location, fromDao);
-        
+
         location.setName("Updated Test Location Name");
-        locationDao.updateLocation(location);        
-        assertNotEquals(location, fromDao);   
+        locationDao.updateLocation(location);
+        assertNotEquals(location, fromDao);
     }
 
     /**
@@ -142,41 +154,46 @@ public class LocationDaoDBTest {
      */
     @Test
     public void testDeleteLocationById() {
-        Organization organization=new Organization();
+        Organization organization = new Organization();
         organization.setName("Test Organization Name");
         organization.setDescription("Test Organization description");
         organization.setAddress("Test Organization address");
-        
-        organization=organizationDao.addOrganization(organization);
-        
-        List<Organization> organizationList=new ArrayList<>();
+        organization = organizationDao.addOrganization(organization);
+
+        List<Organization> organizationList = new ArrayList<>();
         organizationList.add(organization);
-        
+
+        SuperPower power = new SuperPower();
+        power.setSuperPower("test superPower");
+        power.setDescription("Super Power Description");
+        SuperPower superPowers = superPowerDao.addSuperPower(power);
         Hero testHero = new Hero();
+
         testHero.setName("test Hero Name 1");
         testHero.setDescription("Test Hero Description");
-        testHero.setSuperPower("test SuperPower");
-        testHero.setOrganizations(organizationList);  
-        testHero= heroDao.addHero(testHero);
-        
-        Location location=new Location();
+        testHero.setSuperPowers(superPowers);
+        testHero.setOrganizations(organizationList);
+        testHero = heroDao.addHero(testHero);
+
+        Location location = new Location();
         location.setName("Test Location name");
         location.setDescription("Test Location description");
         location.setAddress("Test Location address");
-        location.setLatlong("Test Location latlong");
-        location=locationDao.addLocation(location);        
-        
-        Sighting sighting=new Sighting();
-        sighting.setDate(LocalDate.now());
+        location.setLatitude("Test Location latitude");
+        location.setLongitude("Test Location longitude");
+        location = locationDao.addLocation(location);
+
+        Sighting sighting = new Sighting();
+        sighting.setDate(LocalDateTime.now());
         sighting.setHero(testHero);
         sighting.setLocation(location);
         sighting.setDescription(" Test Sighting description");
-        sighting=sightingDao.addSighting(sighting);
-        
+        sighting = sightingDao.addSighting(sighting);
+
         locationDao.deleteLocationById(location.getId());
-        
-        Location fromDao=locationDao.getLocationById(location.getId());
+
+        Location fromDao = locationDao.getLocationById(location.getId());
         assertNull(fromDao);
     }
-    
+
 }

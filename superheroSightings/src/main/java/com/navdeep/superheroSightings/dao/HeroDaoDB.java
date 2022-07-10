@@ -6,8 +6,10 @@
 package com.navdeep.superheroSightings.dao;
 
 import com.navdeep.superheroSightings.dao.OrganizationDaoDB.OrganizationRowMapper;
+import com.navdeep.superheroSightings.dao.SuperPowerDaoDB.SuperPowerRowMapper;
 import com.navdeep.superheroSightings.entities.Hero;
 import com.navdeep.superheroSightings.entities.Organization;
+import com.navdeep.superheroSightings.entities.SuperPower;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -30,8 +32,8 @@ public class HeroDaoDB implements HeroDao {
 
     final String SELECT_HERO_BY_ID = "SELECT * FROM hero WHERE id=?";
     final String SELECT_ALL_HEROS = "SELECT * FROM hero";
-    final String INSERT_HERO = "INSERT INTO hero(name,description,superPower) VALUES(?,?,?)";
-    final String UPDATE_HERO = "UPDATE hero SET name=?,description=?,superPower=? WHERE id=?";
+    final String INSERT_HERO = "INSERT INTO hero(name,description,superPowerId) VALUES(?,?,?)";
+    final String UPDATE_HERO = "UPDATE hero SET name=?,description=?,superPowerId=? WHERE id=?";
     final String DELETE_HERO_BY_ID = "DELETE FROM hero WHERE id=?";
     final String DELETE_HERO_ORGANIZATION_BY_HERO_ID = "DELETE FROM hero_organization WHERE heroID=?";
     final String DELETE_SIGHTING_BY_HERO_BY_ID = "DELETE FROM sighting WHERE heroId=?";
@@ -50,6 +52,9 @@ public class HeroDaoDB implements HeroDao {
                     id);
             List<Organization> organizations = getOrganizationsOfHero(hero);
             hero.setOrganizations(organizations);
+
+            SuperPower superPowers = getSuperPowersOfHero(hero);
+            hero.setSuperPowers(superPowers);
             return hero;
         } catch (DataAccessException e) {
             return null;
@@ -63,6 +68,8 @@ public class HeroDaoDB implements HeroDao {
         for (Hero hero : heros) {
             List<Organization> organizations = getOrganizationsOfHero(hero);
             hero.setOrganizations(organizations);
+            SuperPower superPowers = getSuperPowersOfHero(hero);
+            hero.setSuperPowers(superPowers);
         }
         return heros;
     }
@@ -73,10 +80,12 @@ public class HeroDaoDB implements HeroDao {
         jdbcTemplate.update(INSERT_HERO,
                 hero.getName(),
                 hero.getDescription(),
-                hero.getSuperPower());
+                hero.getSuperPowers().getId());
         int newId = jdbcTemplate.queryForObject("SELECT Last_INSERT_ID()", Integer.class);
         hero.setId(newId);
         insertOrganizationsForHero(hero);
+        SuperPower superPowers = getSuperPowersOfHero(hero);
+        hero.setSuperPowers(superPowers);
         return hero;
     }
 
@@ -87,7 +96,7 @@ public class HeroDaoDB implements HeroDao {
         jdbcTemplate.update(UPDATE_HERO,
                 hero.getName(),
                 hero.getDescription(),
-                hero.getSuperPower(),
+                hero.getSuperPowers().getId(),
                 hero.getId());
     }
 
@@ -114,13 +123,25 @@ public class HeroDaoDB implements HeroDao {
 
     @Override
     public List<Hero> getAllMemberHerosOfOrganization(Organization organization) {
-        List<Hero> heros=jdbcTemplate.query(SELECT_HEROS_FOR_ORGANIZATION_BY_ID,
-                new HeroRowMapper(),organization.getId());
+        List<Hero> heros = jdbcTemplate.query(SELECT_HEROS_FOR_ORGANIZATION_BY_ID,
+                new HeroRowMapper(), organization.getId());
         for (Hero hero : heros) {
-            List<Organization> organizations=getOrganizationsOfHero(hero);
+            List<Organization> organizations = getOrganizationsOfHero(hero);
             hero.setOrganizations(organizations);
+            SuperPower superPower = getSuperPowersOfHero(hero);
+            hero.setSuperPowers(superPower);
         }
         return heros;
+    }
+
+    private SuperPower getSuperPowersOfHero(Hero hero) {
+        final String SELECT_SUPERPOWERS_OF_HERO = "SELECT s.* FROM superPower s JOIN hero h ON s.id=h.superPowerId WHERE h.id=?";
+        return jdbcTemplate.queryForObject(SELECT_SUPERPOWERS_OF_HERO, new SuperPowerRowMapper(), hero.getId());
+        
+    }
+
+    private void insertSuperPowersForHero(Hero hero) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public static final class HeroRowMapper implements RowMapper<Hero> {
@@ -131,9 +152,7 @@ public class HeroDaoDB implements HeroDao {
             hero.setId(rs.getInt("id"));
             hero.setName(rs.getString("name"));
             hero.setDescription(rs.getString("description"));
-            hero.setSuperPower(rs.getString("superPower"));
             return hero;
         }
-
     }
 }

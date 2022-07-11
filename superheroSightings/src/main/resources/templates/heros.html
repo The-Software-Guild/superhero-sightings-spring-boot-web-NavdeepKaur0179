@@ -22,7 +22,10 @@
             </div>
             <div class="row m-4 ">
                 <div class="col text-center m-3">
-                    <a href="heros" class="btn btn-outline-primary btn-lg">Super Heroes</a>
+                    <a href="heros" class="btn btn-outline-primary btn-lg">Heroes & Villians</a>
+                </div>
+                <div class="col text-center m-3">
+                    <a href="superPowers" class="btn btn-outline-primary btn-lg">Super Powers</a>
                 </div>
                 <div class="col text-center m-3">
                     <a href="locations" class="btn btn-outline-primary btn-lg">Locations</a>
@@ -45,9 +48,16 @@
             </div>
 
         </div>
+
+
         <!--*****************Add Hero Modal******************-->
         <div>
-
+            <!--     Gives error
+            <div class="col m-1 text-center" 
+                             th:if="${!errors.isEmpty()}">
+                            <p class="alert alert-danger" th:each="error : ${errors}" 
+                               th:text="${error.message}">Error message</p>
+                        </div> -->
             <div class="modal" id="addHeroModal" tabindex="-1" role="dialog">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -57,11 +67,12 @@
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
+                        <!--   cause error
                         <div class="col m-1 text-center" 
-                             th:if="${!errors.isEmpty()}">
-                            <p class="alert alert-danger" th:each="error : ${errors}" 
-                               th:text="${error.message}">Error message</p>
-                        </div> 
+                                                     th:if="${!errors.isEmpty()}">
+                                                    <p class="alert alert-danger" th:each="error : ${errors}" 
+                                                       th:text="${error.message}">Error message</p>
+                                                </div> -->
                         <div class="modal-body">                             
                             <form type="form" action="addHero" method="POST">
                                 <div class="form-group">
@@ -76,7 +87,6 @@
                                 <div class="form-group">
                                     <label  for="HeroOrganization">Organization</label>
                                     <select multiple class="form-control" name="organizationId">
-                                        <option value="" selected disabled hidden>Choose Organization</option>
                                         <option th:each="organization : ${organizations}"
                                                 th:value="${organization.id}"
                                                 th:text="${organization.name}">Organization</option>
@@ -85,6 +95,7 @@
                                 <div class="form-group">
                                     <label  for="heroSuperPower">SuperPower</label>
                                     <select  class="form-control" name="superPowerId">
+                                        <option value="" selected disabled hidden>----Choose Superpower---</option>
                                         <option th:each="superPower : ${superPowers}"
                                                 th:value="${superPower.id}"
                                                 th:text="${superPower.superPower}">Select SuperPower</option>
@@ -98,15 +109,13 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col m-4">
+        <div class="row m-4 border border-primary">
+            <div class="col text-center m-3">
                 <!--                    <h3>Heros</h3>-->
-                <table class="table table-striped">
+                <table class="table table-sm text-left">
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Name</th>
-<!--                            <th>Description</th>-->
                             <th>Organizations </th>
                             <th>SuperPower</th>
                             <th>Detail</th>
@@ -114,15 +123,71 @@
                             <th>Delete</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="h4 small">
                         <tr th:each="hero : ${heros}">
-                            <td th:text="${hero.id}">id</td>
                             <td th:text="${hero.name}">name</td>
-<!--                            <td th:text="${hero.description}">Description</td>-->
+                            <!--                            <td th:text="${hero.description}">Description</td>-->
                             <td><span th:each="a, heroOrganization : ${hero.organizations}" th:text="!${heroOrganization.last} ? ${a.name} + ',': ${a.name}"></span></td>
                             <td th:text="${hero.superPowers.superPower}">SuperPower</td>
-                            <td><a th:attr="href=${'#detailModal'+hero.id}" data-toggle="modal" th:data-row="${hero}">Detail</a></td>
-                            
+
+                            <!--                            *************Detail Hero Modal************-->
+                            <td><a th:attr="href=${'#detailModal'+hero.id}" data-toggle="modal" th:data-row="${hero}" >Detail</a></td>
+                            <div th:each="hero : ${heros}" class="modal" th:attr="id=${'detailModal'+ hero.id}" tabindex="-1" role="dialog">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Details of Hero</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row m-4 border border-primary" >
+                                                <div class="col-5 col-form-label text-right"><strong>Hero:</strong></div>            
+                                                <div class="col-7 col-form-label text-left">
+                                                    <span th:text="${hero.name}">display</span>
+                                                </div>           
+                                                <!-- <div class="col-5 col-form-label text-right"><strong>Type:</strong></div>            
+                                                <div class="col-7 col-form-label text-left">
+                                                    <span th:text="${hero.type}">display</span>
+                                                </div>            -->
+                                                <div class="col-5 col-form-label text-right"><strong>Description:</strong></div>            
+                                                <div class="col-7 col-form-label text-left">
+                                                    <span th:text="${hero.description}">display</span>
+                                                </div>             
+                                                <div class="col-5 col-form-label text-right"><strong>Power:</strong></div>            
+                                                <div class="col-7 col-form-label text-left">
+                                                    <span th:text="${hero.superPowers.superPower}">display</span>
+                                                </div>              
+                                                <div class="col-5 col-form-label text-right"><strong>Organizations:</strong></div>           
+                                                <div class="col-7 col-form-label text-left">
+                                                    <span th:each="organization : ${hero.organizations}">
+                                                        <span th:text="${organization.name}">display</span><br/>
+                                                    </span>
+                                                </div>
+                                                <div class="col-5 col-form-label text-right"><strong>Locations Seen:</strong></div>           
+                                                <div class="col-7 col-form-label text-left">
+                                                    <span th:each="key : ${heroLocations.keySet()}">
+
+                                                        <span th:if="${key == hero.id}" th:each="location : ${heroLocations.get(key)}">
+                                                            <p th:text="${location.name}">                                                                
+                                                            </p>
+
+                                                        </span>
+                                                    </span> <br/>
+
+
+                                                </div>
+                                                <div class="col text-center m-3">
+                                                    <a href="heros" class="btn btn-primary">Go Back To Heroes Main Page</a>   
+                                                </div>            
+                                            </div>               
+                                        </div>                                       
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--                            *************Edit Hero Modal************-->
                             <td><a th:attr="href=${'#editModal'+hero.id}" data-toggle="modal" th:data-row="${hero}">Edit</a></td>
                             <div th:each="hero : ${heros}" class="modal" th:attr="id=${'editModal'+ hero.id}" tabindex="-1" role="dialog">
                                 <div class="modal-dialog" role="document">
@@ -221,6 +286,7 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
                 integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
+        <script src="../js/heros.js"></script>
     </body>
 
 </html>

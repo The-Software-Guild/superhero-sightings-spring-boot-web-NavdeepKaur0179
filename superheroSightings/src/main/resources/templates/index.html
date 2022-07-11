@@ -26,7 +26,10 @@ and open the template in the editor.
             </div>
             <div class="row m-4 ">
                 <div class="col text-center m-3">
-                    <a href="heros" class="btn btn-outline-primary btn-lg">Super Heroes</a>
+                        <a href="heros" class="btn btn-outline-primary btn-lg">Heroes & Villians</a>
+                </div>
+                <div class="col text-center m-3">
+                    <a href="superPowers" class="btn btn-outline-primary btn-lg">Super Powers</a>
                 </div>
                 <div class="col text-center m-3">
                     <a href="locations" class="btn btn-outline-primary btn-lg">Locations</a>
@@ -37,6 +40,35 @@ and open the template in the editor.
                 <div class="col text-center m-3">
                     <a href="sightings" class="btn btn-outline-primary btn-lg">Sightings</a>
                 </div>
+            </div>
+        </div>
+        <div class="row m-4 border border-primary  text-center">
+            <span class="col h4 m-3">Welcome to Super Hero & Villian Sightings.  Here you can report and view super hero and super villian sightings!</span>
+        </div>
+        
+        <div class="row m-4 border border-primary">
+            <div class="col text-center m-3">
+                <div class="col-12 text-center m-3">
+                    <span class="h3">Latest Hero Sightings</span>     
+                </div>
+                <table class="table table-sm text-left">
+                    <thead>
+                        <tr>
+                            <th width="20%">Hero</th>
+                            <th width="20%">Location</th>                          
+                            <th width="40%">Description</th>
+                            <th width="20%">Date & Time</th>
+                        </tr>
+                    </thead>
+                    <tbody class="h4 small">
+                        <tr th:each="sighting : ${sightings}">
+                            <td th:text="${sighting.hero.name}"></td>
+                            <td th:text="${sighting.location.name}"></td>                        
+                            <td th:text="${sighting.description}"></td>
+                            <td th:text="${#temporals.format(sighting.date, 'MM/dd/yyyy hh:mm a')}"></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
         <!-- End main body -->

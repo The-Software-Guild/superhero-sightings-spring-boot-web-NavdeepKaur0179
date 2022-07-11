@@ -22,7 +22,10 @@
             </div>
             <div class="row m-4 ">
                 <div class="col text-center m-3">
-                    <a href="heros" class="btn btn-outline-primary btn-lg">Super Heroes</a>
+                    <a href="heros" class="btn btn-outline-primary btn-lg">Heroes & Villians</a>
+                </div>
+                 <div class="col text-center m-3">
+                    <a href="superPowers" class="btn btn-outline-primary btn-lg">Super Powers</a>
                 </div>
                 <div class="col text-center m-3">
                     <a href="locations" class="btn btn-outline-primary btn-lg">Locations</a>
@@ -78,25 +81,59 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col m-4">
-                <table class="table table-striped">
+        <div class="row m-4 border border-primary">
+            <div class="col text-center m-3">
+                <table class="table table-sm text-left">
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Name</th>
-                            <th>Description</th>
-                            <th>Address</th>                            
+                            <!--                            <th>Description</th>-->
+                            <th>Address</th> 
+                            <th>Detail</th>
                             <th>Edit</th>
                             <th>Delete</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="h4 small">
                         <tr th:each="organization : ${organizations}">
-                            <td th:text="${organization.id}">id</td>
                             <td th:text="${organization.name}">name</td>
-                            <td th:text="${organization.description}">Description</td>
-                            <td th:text="${organization.address}">Address</td>                            
+                            <!--                            <td th:text="${organization.description}">Description</td>-->
+                            <td th:text="${organization.address}">Address</td>  
+
+                            <!--                            *************Detail Hero Modal************-->
+                             <td><a th:attr="href=${'#detailModal'+organization.id}" data-toggle="modal" th:data-row="${organization}">Detail</a></td>
+                            <div th:each="organization : ${organizations}" class="modal" th:attr="id=${'detailModal'+ organization.id}" tabindex="-1" role="dialog">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Details of Organization</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row m-4 border border-primary" >
+                                                <div class="col-5 col-form-label text-right"><strong>Organization:</strong></div>            
+                                                <div class="col-7 col-form-label text-left">
+                                                    <span th:text="${organization.name}">display</span>
+                                                </div>           
+                                                       
+                                                <div class="col-5 col-form-label text-right"><strong>Description:</strong></div>            
+                                                <div class="col-7 col-form-label text-left">
+                                                    <span th:text="${organization.description}">display</span>
+                                                </div>             
+                                                <div class="col-5 col-form-label text-right"><strong>Address:</strong></div>            
+                                                <div class="col-7 col-form-label text-left">
+                                                    <span th:text="${organization.address}">display</span>
+                                                </div>              
+                                                <div class="col text-center m-3">
+                                                    <a href="heros" class="btn btn-primary">Go Back To Organization Main Page</a>   
+                                                </div>            
+                                            </div>               
+                                        </div>                                       
+                                    </div>
+                                </div>
+                            </div>
                             <td><a th:attr="href=${'#editModal'+organization.id}" data-toggle="modal" th:data-row="${organization}">Edit</a></td>
                             <!--*****************Edit Organization Modal******************-->                       
                             <div th:each="organization : ${organizations}" class="modal" th:attr="id=${'editModal'+ organization.id}" tabindex="-1" role="dialog">
@@ -155,7 +192,7 @@
                                             <form type="form" action="deleteOrganization" method="POST">
                                                 <input type="hidden" name="id" th:value="${organization.id}"/>
                                                 <button type="submit" class="btn btn-primary">Yes</button> 
-<!--                                                 <button type="submit" class="btn btn-primary" th:href="@{/deleteOrganization(id=${organization.id})}">Yes</button>-->
+                                                <!--                                                 <button type="submit" class="btn btn-primary" th:href="@{/deleteOrganization(id=${organization.id})}">Yes</button>-->
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
                                             </form>
                                         </div>

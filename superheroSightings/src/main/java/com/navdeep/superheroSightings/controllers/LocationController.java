@@ -30,18 +30,6 @@ public class LocationController {
     public LocationController(SuperHeroServiceLayer superHeroServiceLayer) {
         this.superHeroServiceLayer = superHeroServiceLayer;
     }
-
-//    @Autowired
-//    HeroDao heroDao;
-//
-//    @Autowired
-//    LocationDao locationDao;
-//
-//    @Autowired
-//    OrganizationDao organizationDao;
-//
-//    @Autowired
-//    SightingDao sightingDao;
     String exceptionErrorMessage = "";
 
     @GetMapping("locations")

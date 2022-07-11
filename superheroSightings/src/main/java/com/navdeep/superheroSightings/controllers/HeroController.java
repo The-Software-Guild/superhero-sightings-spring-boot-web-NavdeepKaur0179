@@ -6,6 +6,7 @@
 package com.navdeep.superheroSightings.controllers;
 
 import com.navdeep.superheroSightings.entities.Hero;
+import com.navdeep.superheroSightings.entities.Location;
 import com.navdeep.superheroSightings.entities.Organization;
 import com.navdeep.superheroSightings.entities.SuperPower;
 import com.navdeep.superheroSightings.service.ClassDataValidationException;
@@ -13,8 +14,10 @@ import com.navdeep.superheroSightings.service.ClassEmptyListException;
 import com.navdeep.superheroSightings.service.ClassNoSuchRecordException;
 import com.navdeep.superheroSightings.service.SuperHeroServiceLayer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
@@ -53,15 +56,20 @@ public class HeroController {
 
     Set<ConstraintViolation<Hero>> violations = new HashSet<>();
     String exceptionErrorMessage = "";
+    Map<Integer, List<Location>> heroLocations = new HashMap<>();
 
     @GetMapping("heros")
     public String getHeros(Model model) {
         try {
             List<Hero> heros = superHeroServiceLayer.getAllHeros();
+            for (Hero hero : heros) {
+                heroLocations.put(hero.getId(), superHeroServiceLayer.getAllLocationsHeroSeen(hero));
+            }
+            model.addAttribute("heroLocations", heroLocations);
             model.addAttribute("heros", heros);
         } catch (ClassEmptyListException e) {
             exceptionErrorMessage = e.getMessage();
-            return "redirect/errorPAge";
+            return "redirect/errorPage";
         }
         try {
             List<Organization> organizations = superHeroServiceLayer.getAllOrganizations();
@@ -70,7 +78,7 @@ public class HeroController {
             model.addAttribute("superPowers", superPowers);
         } catch (ClassEmptyListException e) {
             exceptionErrorMessage = e.getMessage();
-            return "redirect/errorPAge";
+            return "redirect/errorPage";
         }
         model.addAttribute("errors", violations);
         return "heros";
@@ -85,10 +93,10 @@ public class HeroController {
             for (String organizationId : organizationIds) {
                 organizations.add(superHeroServiceLayer.getOrganizationById(Integer.parseInt(organizationId)));
             }
-            superPower=superHeroServiceLayer.getSuperPowerById(Integer.parseInt(request.getParameter("superPowerId")));
+            superPower = superHeroServiceLayer.getSuperPowerById(Integer.parseInt(request.getParameter("superPowerId")));
         } catch (ClassNoSuchRecordException e) {
             exceptionErrorMessage = e.getMessage();
-            return "redirect/errorPAge";
+            return "redirect/errorPage";
         }
         hero.setOrganizations(organizations);
         hero.setSuperPowers(superPower);
@@ -100,11 +108,10 @@ public class HeroController {
                 superHeroServiceLayer.addHero(hero);
             } catch (ClassDataValidationException e) {
                 exceptionErrorMessage = e.getMessage();
-                return "redirect/errorPAge";
+                return "redirect/errorPage";
             }
-            return "redirect:/heros";
         }
-        return "heros";
+        return "redirect:/heros";
     }
 
     @PostMapping("editHero")
@@ -115,17 +122,17 @@ public class HeroController {
         String superPowerId = request.getParameter("superPowerId");
         String heroId = request.getParameter("id");
         SuperPower superPower;
-         List<Organization> organizations;
+        List<Organization> organizations;
         try {
             superPower = superHeroServiceLayer.getSuperPowerById(Integer.parseInt(superPowerId));
             organizations = new ArrayList<>();
             for (String organizationId : organizationIds) {
                 Organization organization = superHeroServiceLayer.getOrganizationById(Integer.parseInt(organizationId));
                 organizations.add(organization);
-            }   
+            }
         } catch (ClassNoSuchRecordException e) {
             exceptionErrorMessage = e.getMessage();
-            return "redirect/errorPAge";
+            return "redirect/errorPage";
         }
         Hero hero = new Hero();
         hero.setId(Integer.parseInt(heroId));

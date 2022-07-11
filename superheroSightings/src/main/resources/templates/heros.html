@@ -57,11 +57,11 @@
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                         <div class="col m-1 text-center" 
-                                 th:if="${!errors.isEmpty()}">
-                                <p class="alert alert-danger" th:each="error : ${errors}" 
-                                   th:text="${error.message}">Error message</p>
-                            </div> 
+                        <div class="col m-1 text-center" 
+                             th:if="${!errors.isEmpty()}">
+                            <p class="alert alert-danger" th:each="error : ${errors}" 
+                               th:text="${error.message}">Error message</p>
+                        </div> 
                         <div class="modal-body">                             
                             <form type="form" action="addHero" method="POST">
                                 <div class="form-group">
@@ -76,6 +76,7 @@
                                 <div class="form-group">
                                     <label  for="HeroOrganization">Organization</label>
                                     <select multiple class="form-control" name="organizationId">
+                                        <option value="" selected disabled hidden>Choose Organization</option>
                                         <option th:each="organization : ${organizations}"
                                                 th:value="${organization.id}"
                                                 th:text="${organization.name}">Organization</option>
@@ -86,7 +87,7 @@
                                     <select  class="form-control" name="superPowerId">
                                         <option th:each="superPower : ${superPowers}"
                                                 th:value="${superPower.id}"
-                                                th:text="${superPower.name}">SuperPower</option>
+                                                th:text="${superPower.superPower}">Select SuperPower</option>
                                     </select>
                                 </div>                       
                                 <button type="submit" class="btn btn-primary">Add Hero</button> 
@@ -105,9 +106,10 @@
                         <tr>
                             <th>ID</th>
                             <th>Name</th>
-                            <th>Description</th>
+<!--                            <th>Description</th>-->
                             <th>Organizations </th>
                             <th>SuperPower</th>
+                            <th>Detail</th>
                             <th>Edit</th>
                             <th>Delete</th>
                         </tr>
@@ -116,9 +118,11 @@
                         <tr th:each="hero : ${heros}">
                             <td th:text="${hero.id}">id</td>
                             <td th:text="${hero.name}">name</td>
-                            <td th:text="${hero.description}">Description</td>
+<!--                            <td th:text="${hero.description}">Description</td>-->
                             <td><span th:each="a, heroOrganization : ${hero.organizations}" th:text="!${heroOrganization.last} ? ${a.name} + ',': ${a.name}"></span></td>
-                            <td th:text="${hero.superPower}">SuperPower</td>
+                            <td th:text="${hero.superPowers.superPower}">SuperPower</td>
+                            <td><a th:attr="href=${'#detailModal'+hero.id}" data-toggle="modal" th:data-row="${hero}">Detail</a></td>
+                            
                             <td><a th:attr="href=${'#editModal'+hero.id}" data-toggle="modal" th:data-row="${hero}">Edit</a></td>
                             <div th:each="hero : ${heros}" class="modal" th:attr="id=${'editModal'+ hero.id}" tabindex="-1" role="dialog">
                                 <div class="modal-dialog" role="document">
@@ -159,7 +163,12 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <label  for="heroSuperPower">SuperPower</label>
-                                                    <input type="text" class="form-control" id="heroSuperPower" name="superPower" th:value="${hero.superPower}"/>
+                                                    <select  class="form-control" name="superPowerId">
+                                                        <option th:each="superPower : ${superPowers}"
+                                                                th:value="${superPower.id}"
+                                                                th:text="${superPower.superPower}"
+                                                                th:selected="${hero.superPowers.equals(superPower)}">Select SuperPower</option>
+                                                    </select>
                                                 </div>  
                                                 <input type="hidden" name="id" th:value="${hero.id}"/>
                                                 <button type="submit" class="btn btn-primary">Update Hero</button> 

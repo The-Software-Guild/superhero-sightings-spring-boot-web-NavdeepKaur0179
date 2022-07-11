@@ -80,15 +80,18 @@ public class HeroController {
     public String addHero(Hero hero, HttpServletRequest request) {
         String[] organizationIds = request.getParameterValues("organizationId");
         List<Organization> organizations = new ArrayList<>();
+        SuperPower superPower;
         try {
             for (String organizationId : organizationIds) {
                 organizations.add(superHeroServiceLayer.getOrganizationById(Integer.parseInt(organizationId)));
             }
+            superPower=superHeroServiceLayer.getSuperPowerById(Integer.parseInt(request.getParameter("superPowerId")));
         } catch (ClassNoSuchRecordException e) {
             exceptionErrorMessage = e.getMessage();
             return "redirect/errorPAge";
         }
         hero.setOrganizations(organizations);
+        hero.setSuperPowers(superPower);
         //validate inputs before sending to Dao
         Validator validate = Validation.buildDefaultValidatorFactory().getValidator();
         violations = validate.validate(hero);
@@ -119,7 +122,7 @@ public class HeroController {
             for (String organizationId : organizationIds) {
                 Organization organization = superHeroServiceLayer.getOrganizationById(Integer.parseInt(organizationId));
                 organizations.add(organization);
-            }
+            }   
         } catch (ClassNoSuchRecordException e) {
             exceptionErrorMessage = e.getMessage();
             return "redirect/errorPAge";

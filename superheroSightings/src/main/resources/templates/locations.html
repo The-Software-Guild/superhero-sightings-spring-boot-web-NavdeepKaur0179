@@ -72,9 +72,13 @@
                                 </textarea>
                             </div>
                             <div class="form-group">
-                                <label  for="locationLatlong">Latitude & Longitude</label>
-                                <input type="text" class="form-control" id="locationLatlong" name="latlong"/>
-                            </div>                       
+                                <label  for="latitude">Latitude</label>
+                                <input type="text" class="form-control" id="latitude" name="latitude"/>
+                            </div>             
+                            <div class="form-group">
+                                <label  for="longitude">Longitude</label>
+                                <input type="text" class="form-control" id="longitude" name="longitude"/>
+                            </div> 
                             <button type="submit" class="btn btn-primary">Add Location</button> 
                         </form>                
                     </div>                   
@@ -91,8 +95,8 @@
                             <th>Name</th>
                             <th>Description</th>
                             <th>Address</th>
-                            <th>LatLong</th>
-                            <th>Edit</th>
+                            <th>Details</th>
+                            <th>Edit</th>                          
                             <th>Delete</th>
                         </tr>
                     </thead>
@@ -102,7 +106,7 @@
                             <td th:text="${location.name}">name</td>
                             <td th:text="${location.description}">Description</td>
                             <td th:text="${location.address}">Address</td>
-                            <td th:text="${location.latlong}">Latlong</td>
+                            <td>Details</td>
                             <td><a th:attr="href=${'#editModal'+location.id}" data-toggle="modal" th:data-row="${location}">Edit</a></td>
                             <!--*****************Edit Location Modal******************-->                       
                             <div th:each="location : ${locations}" class="modal" th:attr="id=${'editModal'+ location.id}" tabindex="-1" role="dialog">
@@ -137,9 +141,13 @@
                                                     </textarea>
                                                 </div>                                               
                                                 <div class="form-group">
-                                                    <label  for="locationlatlong">Latitude,Longitude</label>
-                                                    <input type="text" class="form-control" id="locationlatlong" name="latlong" th:value="${location.latlong}"/>
-                                                </div>  
+                                                    <label  for="latitude">Latitude</label>
+                                                    <input type="text" class="form-control" id="latitude" name="latitude" th:value="${location.latitude}"/>
+                                                </div>             
+                                                <div class="form-group">
+                                                    <label  for="longitude">Longitude</label>
+                                                    <input type="text" class="form-control" id="longitude" name="longitude" th:value="${location.longitude}"/>
+                                                </div> 
                                                 <input type="hidden" name="id" th:value="${location.id}"/>
                                                 <button type="submit" class="btn btn-primary">Update Location</button> 
                                             </form>                
@@ -165,7 +173,7 @@
                                             <form type="form" action="deleteLocation" method="POST">
                                                 <input type="hidden" name="id" th:value="${location.id}"/>
                                                 <button type="submit" class="btn btn-primary">Yes</button> 
-<!--                                                 <button type="submit" class="btn btn-primary" th:href="@{/deleteLocation(id=${location.id})}">Yes</button>-->
+                                                <!--                                                 <button type="submit" class="btn btn-primary" th:href="@{/deleteLocation(id=${location.id})}">Yes</button>-->
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
                                             </form>
                                         </div>

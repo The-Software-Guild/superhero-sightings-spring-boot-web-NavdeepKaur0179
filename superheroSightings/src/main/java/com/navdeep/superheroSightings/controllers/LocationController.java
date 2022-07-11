@@ -12,12 +12,10 @@ import com.navdeep.superheroSightings.service.SuperHeroServiceLayer;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  *
@@ -60,10 +58,8 @@ public class LocationController {
     }
 
     @PostMapping("/addLocation")
-    @ResponseStatus(HttpStatus.CREATED)
     public String addLocation(Location location) {
         try {
-
             superHeroServiceLayer.addLocation(location);
             return "redirect:/locations";
         } catch (ClassDataValidationException e) {
@@ -77,7 +73,9 @@ public class LocationController {
         String locationName = request.getParameter("name");
         String locationDescription = request.getParameter("description");
         String locationAddress = request.getParameter("address");
-        String locationLatLong = request.getParameter("latlong");
+        String latitude = request.getParameter("latitude");
+        String longitude = request.getParameter("longitude");
+
         String locationId = request.getParameter("id");
 
         Location location = new Location();
@@ -85,8 +83,8 @@ public class LocationController {
         location.setName(locationName);
         location.setDescription(locationDescription);
         location.setAddress(locationAddress);
-        location.setLatitude("Test Location latitude");
-        location.setLongitude("Test Location longitude");
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
         try {
             superHeroServiceLayer.updateLocation(location);
             return "redirect:/locations";

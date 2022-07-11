@@ -119,7 +119,9 @@ public class SuperHeroServiceLayerImplTest {
         location.setAddress("Test Location address");
         location.setLatitude("Test Location Latitude");
         location.setLongitude("Test Location Latitude");
-        Location shouldBeTestLocation = serviceLayer.getLocationById(1);
+        location=serviceLayer.addLocation(location);
+        
+        Location shouldBeTestLocation = serviceLayer.getLocationById(location.getId());
         assertNotNull(shouldBeTestLocation);
         assertEquals(location, shouldBeTestLocation);
         //Invalid id
@@ -141,12 +143,13 @@ public class SuperHeroServiceLayerImplTest {
         location.setAddress("Test Location address");
         location.setLatitude("Test Location Latitude");
         location.setLongitude("Test Location Latitude");
+        location=serviceLayer.addLocation(location);
 
         List<Location> locations = serviceLayer.getAllLocations();
         assertEquals(1, locations.size());
         assertTrue(locations.contains(location));
 
-        serviceLayer.deleteLocationById(1);
+        serviceLayer.deleteLocationById(location.getId());
         try {
             locations = serviceLayer.getAllLocations();
         } catch (ClassEmptyListException e) {
@@ -222,8 +225,9 @@ public class SuperHeroServiceLayerImplTest {
         testHero.setSuperPowers(superPowers);
         testHero.setOrganizations(organizationList);
         testHero = serviceLayer.addHero(testHero);
+        
 
-        Hero shouldBeTestHero = serviceLayer.getHeroById(1);
+        Hero shouldBeTestHero = serviceLayer.getHeroById(testHero.getId());
         assertNotNull(shouldBeTestHero);
         assertEquals(testHero, shouldBeTestHero);
         //Invalid id
@@ -265,7 +269,7 @@ public class SuperHeroServiceLayerImplTest {
         assertEquals(1, heroes.size());
         assertTrue(heroes.contains(testHero));
 
-        serviceLayer.deleteHeroById(1);
+        serviceLayer.deleteHeroById(testHero.getId());
         try {
             heroes = serviceLayer.getAllHeros();
         } catch (ClassEmptyListException e) {
@@ -373,7 +377,7 @@ public class SuperHeroServiceLayerImplTest {
         organization.setAddress("Test Organization address");
         organization = serviceLayer.addOrganization(organization);
 
-        Organization shouldOrganization = serviceLayer.getOrganizationById(1);
+        Organization shouldOrganization = serviceLayer.getOrganizationById(organization.getId());
         assertNotNull(shouldOrganization);
         assertEquals(shouldOrganization, organization);
 
@@ -402,7 +406,7 @@ public class SuperHeroServiceLayerImplTest {
         assertTrue(organizations.contains(organization));
 
         //Empty List Check
-        serviceLayer.deleteOrganizationbyId(1);
+        serviceLayer.deleteOrganizationbyId(organization.getId());
         try {
             organizations = serviceLayer.getAllOrganizations();
         } catch (ClassEmptyListException e) {
@@ -498,13 +502,13 @@ public class SuperHeroServiceLayerImplTest {
         location = serviceLayer.addLocation(location);
 
         Sighting sighting = new Sighting();
-        sighting.setDate(LocalDateTime.now());
+        sighting.setDate(LocalDateTime.now().withNano(0));
         sighting.setHero(testHero);
         sighting.setLocation(location);
         sighting.setDescription("Test Sighting description");
         sighting = serviceLayer.addSighting(sighting);
 
-        Sighting shouldSighting = serviceLayer.getSighingById(1);
+        Sighting shouldSighting = serviceLayer.getSighingById(sighting.getId());
         assertNotNull(shouldSighting);
         assertEquals(shouldSighting, sighting);
 
@@ -552,7 +556,7 @@ public class SuperHeroServiceLayerImplTest {
         location = serviceLayer.addLocation(location);
 
         Sighting sighting = new Sighting();
-        sighting.setDate(LocalDateTime.now());
+        sighting.setDate(LocalDateTime.now().withNano(0));
         sighting.setHero(testHero);
         sighting.setLocation(location);
         sighting.setDescription("Test Sighting description");
@@ -563,7 +567,7 @@ public class SuperHeroServiceLayerImplTest {
         assertTrue(sightings.contains(sighting));
 
         //Empty List Check
-        serviceLayer.deleteSightingById(1);
+        serviceLayer.deleteSightingById(sighting.getId());
         try {
             sightings = serviceLayer.getAllSightings();
         } catch (ClassEmptyListException e) {

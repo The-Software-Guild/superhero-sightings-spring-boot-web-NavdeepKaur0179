@@ -61,14 +61,16 @@
                             <div class="form-group">
                                 <label  for="sightingLocation">Location</label>
                                 <select  id="sightingLocation" class="form-control" name="locationId">
+                                    <option value="" selected disabled hidden>Choose Location</option>
                                     <option th:each="location : ${locations}"
                                             th:value="${location.id}"
-                                            th:text="${location.name}">Location</option>
+                                            th:text="${location.name}">Select Location</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label  for="sightingHero">hero</label>
                                 <select  id="sightingHero" class="form-control" name="heroId">
+                                    <option value="" selected disabled hidden>Choose Hero</option>
                                     <option th:each="hero : ${heroes}"
                                             th:value="${hero.id}"
                                             th:text="${hero.name}">Hero</option>
@@ -76,7 +78,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="sightingDate">Name</label>
-                                <input id="sightingDate" type="date" class="form-control" name="date"/>
+                                <input id="sightingDate" type="datetime-local" class="form-control" name="date"/>
                             </div>
                             <div class="form-group">
                                 <label  for="sightingDescription">Description</label>
@@ -164,7 +166,7 @@
                                 </div>
                             </div>
                             <td><a href="#" th:attr="href=${'#deleteModal'+sighting.id}" data-toggle="modal" >Delete</a></td>
-<!--                            **********************Delete Modal**********************************-->
+                            <!--                            **********************Delete Modal**********************************-->
                             <div class="modal" th:each="sighting : ${sightings}" th:attr="id=${'deleteModal'+ sighting.id}" tabindex="-1" role="dialog">
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">

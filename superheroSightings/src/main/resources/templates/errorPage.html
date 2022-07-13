@@ -25,6 +25,9 @@
                     <a href="heros" class="btn btn-outline-primary btn-lg">Super Heroes</a>
                 </div>
                 <div class="col text-center m-3">
+                    <a href="superPowers" class="btn btn-outline-primary btn-lg">Super Powers</a>
+                </div>
+                <div class="col text-center m-3">
                     <a href="locations" class="btn btn-outline-primary btn-lg">Locations</a>
                 </div>
                 <div class="col text-center m-3">
@@ -37,15 +40,15 @@
         </div>
 
         <div class=" m-4 border border-primary  text-center">
-            <p class="h4 m-3 alert alert-danger"> Something went wrong, some fields on page were invalid. Please try again with valid entries.
+            <p class="h4 m-3 text-danger"> Something went wrong, some fields on page were invalid. Please go back using browser's back button and try again with valid entries.
                 <br>
             </p>
-            <p class=" h4 m-3 alert alert-danger"   th:text="${exceptionErrorMessage}">
+            <p class=" h4 m-3 alert alert-danger"  th:if='${!customErrors.isEmpty()}' th:each="error :${customErrors}" th:text="${error}">
                 Exception Error Message
             </p>
             <div class="col-12 m-1 text-center" 
-                 th:if="${!errors.isEmpty()}">
-                <p class="alert alert-danger" 
+                 th:if="${errors!=null}">
+                <p class="h4 m-3 alert alert-danger" 
                    th:each="error : ${errors}" th:text="${error.message}">Error message</p>
             </div>
         </div>

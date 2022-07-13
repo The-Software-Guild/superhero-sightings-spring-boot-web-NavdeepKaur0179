@@ -6,6 +6,8 @@
 package com.navdeep.superheroSightings.entities;
 
 import java.util.Objects;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -13,7 +15,11 @@ import java.util.Objects;
  */
 public class SuperPower {
     private int id;
+    
+    @NotBlank(message = "SuperPower must not be empty.")
+    @Size(max = 50, message="SuperPower must be less than 50 characters.")
     private String superPower;
+    
     private String description;
 
     public int getId() {
@@ -24,6 +30,7 @@ public class SuperPower {
         this.id = id;
     }
 
+    
     public String getSuperPower() {
         return superPower;
     }

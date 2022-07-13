@@ -9,8 +9,14 @@ import com.navdeep.superheroSightings.entities.SuperPower;
 import com.navdeep.superheroSightings.service.ClassDataValidationException;
 import com.navdeep.superheroSightings.service.ClassEmptyListException;
 import com.navdeep.superheroSightings.service.SuperHeroServiceLayer;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,11 +32,16 @@ public class SuperPowerController {
 
     @Autowired
     final SuperHeroServiceLayer superHeroServiceLayer;
+    
+    List<String> customErrors;
+
+    Set<ConstraintViolation<SuperPower>> violations = new HashSet<>();
+    Validator validate = Validation.buildDefaultValidatorFactory().getValidator();
 
     public SuperPowerController(SuperHeroServiceLayer superHeroServiceLayer) {
         this.superHeroServiceLayer = superHeroServiceLayer;
     }
-    
+
     @GetMapping("superPowers")
     public String getSuperPowers(Model model) {
         try {
@@ -45,7 +56,14 @@ public class SuperPowerController {
     }
 
     @PostMapping("/addSuperPower")
-    public String addSuperPower(SuperPower superPower) {
+    public String addSuperPower(SuperPower superPower, Model model) {
+        customErrors=new ArrayList<>();
+        violations = validate.validate(superPower);
+        model.addAttribute("errors", violations);
+        if (!violations.isEmpty()) {
+            model.addAttribute("customErrors", customErrors);
+            return "errorPage";
+        }
         try {
             superHeroServiceLayer.addSuperPower(superPower);
             return "redirect:/superPowers";
@@ -56,9 +74,16 @@ public class SuperPowerController {
     }
 
     @PostMapping("editSuperPower")
-    public String editSuperPower(SuperPower superPower,HttpServletRequest request) {
-        String superPowerId = request.getParameter("id");       
-        superPower.setId(Integer.parseInt(superPowerId));        
+    public String editSuperPower(SuperPower superPower, HttpServletRequest request, Model model) {
+        customErrors=new ArrayList<>();
+        violations = validate.validate(superPower);
+        model.addAttribute("errors", violations);
+        if (!violations.isEmpty()) {
+            model.addAttribute("customErrors", customErrors);
+            return "errorPage";
+        }
+        String superPowerId = request.getParameter("id");
+        superPower.setId(Integer.parseInt(superPowerId));
         try {
             superHeroServiceLayer.updateSuperPower(superPower);
             return "redirect:/superPowers";
@@ -71,7 +96,7 @@ public class SuperPowerController {
 
     @PostMapping("/deleteSuperPower")
     public String deleteSuperPower(HttpServletRequest request) {
-        int id=Integer.parseInt(request.getParameter("id"));
+        int id = Integer.parseInt(request.getParameter("id"));
         superHeroServiceLayer.deleteSuperPowerById(id);
         return "redirect:/superPowers";
     }

@@ -24,7 +24,7 @@
                 <div class="col text-center m-3">
                     <a href="heros" class="btn btn-outline-primary btn-lg">Heroes & Villians</a>
                 </div>
-                 <div class="col text-center m-3">
+                <div class="col text-center m-3">
                     <a href="superPowers" class="btn btn-outline-primary btn-lg">Super Powers</a>
                 </div>
                 <div class="col text-center m-3">
@@ -170,29 +170,29 @@
                                                 <div class="form-group">
                                                     <label for="locationName">Name</label>
                                                     <input type="text" class="form-control" id="locationName" name="name" 
-                                                           th:value="${location.name}"/>
+                                                           th:value="${location.name}"/>                                                    
                                                 </div>
                                                 <div class="form-group">
                                                     <label  for="locationDescription">Description</label>
                                                     <textarea rows="2" class="form-control text-start" id="locationDescription" name="description" 
                                                               th:text="${location.description}">
                                                         Description
-                                                    </textarea>
+                                                    </textarea>                                                    
                                                 </div>
                                                 <div class="form-group">
                                                     <label  for="locationAddress">Address</label>
                                                     <textarea rows="2" class="form-control text-start" id="locationAddress" name="address" 
                                                               th:text="${location.address}">
                                                         Address
-                                                    </textarea>
+                                                    </textarea>                                                    
                                                 </div>                                               
                                                 <div class="form-group">
                                                     <label  for="latitude">Latitude</label>
-                                                    <input type="text" class="form-control" id="latitude" name="latitude" th:value="${location.latitude}"/>
+                                                    <input type="text" class="form-control" id="latitude" name="latitude" th:value="${location.latitude}"/>                                                     
                                                 </div>             
                                                 <div class="form-group">
                                                     <label  for="longitude">Longitude</label>
-                                                    <input type="text" class="form-control" id="longitude" name="longitude" th:value="${location.longitude}"/>
+                                                    <input type="text" class="form-control" id="longitude" name="longitude" th:value="${location.longitude}"/>                                                     
                                                 </div> 
                                                 <input type="hidden" name="id" th:value="${location.id}"/>
                                                 <button type="submit" class="btn btn-primary">Update Location</button> 

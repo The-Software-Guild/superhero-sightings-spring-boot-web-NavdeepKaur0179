@@ -7,8 +7,6 @@ package com.navdeep.superheroSightings.entities;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
-import javax.validation.constraints.FutureOrPresent;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 /**
@@ -16,19 +14,17 @@ import javax.validation.constraints.Size;
  * @author nkaur
  */
 public class Sighting {
+
     private int id;
-    
-    @NotBlank(message = "Location must not be empty.")
+
     private Location location;
-   
-    @NotBlank(message = "Hero must not be empty.")
+
     private Hero hero;
-    
-    @Size(max = 255, message="Description must be less than 255 characters.")
+
+    @Size(max = 255, message = "Description must be less than 255 characters.")
     private String description;
-    
-    @FutureOrPresent
-    private LocalDateTime date;   
+
+    private LocalDateTime date;
 
     public int getId() {
         return id;
@@ -111,6 +107,4 @@ public class Sighting {
         return true;
     }
 
- 
-   
 }

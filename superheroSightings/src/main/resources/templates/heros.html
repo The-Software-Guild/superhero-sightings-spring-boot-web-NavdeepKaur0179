@@ -11,7 +11,7 @@
               integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
             <title>SuperHeroSighting</title>
-            
+
     </head>
 
     <body>
@@ -68,14 +68,8 @@
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                        <!--   cause error
-                        <div class="col m-1 text-center" 
-                                                     th:if="${!errors.isEmpty()}">
-                                                    <p class="alert alert-danger" th:each="error : ${errors}" 
-                                                       th:text="${error.message}">Error message</p>
-                                                </div> -->
                         <div class="modal-body">                             
-                            <form type="form" action="addHero" method="POST">
+                            <form type="form"  action="addHero" method="POST">
                                 <div class="form-group">
                                     <label for="heroName">Name</label>
                                     <input type="text" class="form-control" id="heroName" name="name"/>
@@ -112,7 +106,7 @@
 
         <div class="row m-4 border border-primary">
             <div class="col m-3">
-                 <div class="col-12 text-center m-3">
+                <div class="col-12 text-center m-3">
                     <span class="h3">Heroes List</span>     
                 </div>
                 <table class="table table-sm text-left">
@@ -276,7 +270,7 @@
                 </table>
             </div>
         </div>
-         <div class="row m-4 text-center border border-primary">
+        <div class="row m-4 text-center border border-primary">
             <div class="col-4"></div>
             <div class="col-4 m-2">
                 <form action="herosByOrganization" method="POST">
@@ -296,7 +290,7 @@
                 </form>   
             </div>
             <div class="col-4"></div>
-         </div>
+        </div>
         </div>
         <!-- Optional JavaScript -->
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->

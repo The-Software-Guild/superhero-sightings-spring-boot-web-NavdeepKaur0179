@@ -54,11 +54,15 @@ public class HeroController {
 //    @Autowired
 //    SightingDao sightingDao;
 
-    Set<ConstraintViolation<Hero>> violations = new HashSet<>();   
+    // Set<ConstraintViolation<Hero>> violations = new HashSet<>();
     Map<Integer, List<Location>> heroLocations = new HashMap<>();
     List<Hero> heros;
     List<Organization> organizations;
     List<SuperPower> superPowers;
+    List<String> customErrors;
+
+    Set<ConstraintViolation<Hero>> violations = new HashSet<>();
+    Validator validate = Validation.buildDefaultValidatorFactory().getValidator();
 
     @GetMapping("heros")
     public String getHeros(Model model) {
@@ -74,7 +78,7 @@ public class HeroController {
             return "redirect/errorPage";
         }
         try {
-           organizations = superHeroServiceLayer.getAllOrganizations();
+            organizations = superHeroServiceLayer.getAllOrganizations();
             model.addAttribute("organizations", organizations);
             superPowers = superHeroServiceLayer.getAllSuperPowers();
             model.addAttribute("superPowers", superPowers);
@@ -87,69 +91,109 @@ public class HeroController {
     }
 
     @PostMapping("/addHero")
-    public String addHero(Hero hero, HttpServletRequest request,Model model) {
+    public String addHero(Hero hero, HttpServletRequest request, Model model) {
+        customErrors = new ArrayList<>();
         String[] organizationIds = request.getParameterValues("organizationId");
         List<Organization> organizations = new ArrayList<>();
-        SuperPower superPower;
-        if (organizationIds!=null) {
-           try {
-            for (String organizationId : organizationIds) {
-                organizations.add(superHeroServiceLayer.getOrganizationById(Integer.parseInt(organizationId)));
-            }
-            superPower = superHeroServiceLayer.getSuperPowerById(Integer.parseInt(request.getParameter("superPowerId")));
-        } catch (ClassNoSuchRecordException e) {
-            LocationController.exceptionErrorMessage = e.getMessage();
-            return "redirect/errorPage";
-        }
-        hero.setOrganizations(organizations);  
-        hero.setSuperPowers(superPower);
-        }
-        //validate inputs before sending to Dao
-        Validator validate = Validation.buildDefaultValidatorFactory().getValidator();
-        violations = validate.validate(hero);
-        model.addAttribute("errors", violations);
-        if (violations.isEmpty()) {
+        SuperPower superPower = null;
+
+        //add error message if no organization is selected
+        if (organizationIds != null) {
             try {
-                superHeroServiceLayer.addHero(hero);
-            } catch (ClassDataValidationException e) {
+                for (String organizationId : organizationIds) {
+                    organizations.add(superHeroServiceLayer.getOrganizationById(Integer.parseInt(organizationId)));
+                }
+            } catch (ClassNoSuchRecordException e) {
                 LocationController.exceptionErrorMessage = e.getMessage();
                 return "redirect/errorPage";
             }
+            hero.setOrganizations(organizations);
+            hero.setSuperPowers(superPower);
+        } else {
+            customErrors.add(("You must select atleast one organization"));
+            model.addAttribute("customErrors", customErrors);
+        }
+
+        //add error message if no Super Power is selected
+        if (request.getParameter("superPowerId") == null) {
+            customErrors.add(("You must select atleast one Super Power"));
+            model.addAttribute("customErrors", customErrors);
+        } else {
+            try {
+                superPower = superHeroServiceLayer.getSuperPowerById(Integer.parseInt(request.getParameter("superPowerId")));
+            } catch (ClassNoSuchRecordException e) {
+                LocationController.exceptionErrorMessage = e.getMessage();
+                return "redirect/errorPage";
+            }
+        }
+        violations = validate.validate(hero);
+        model.addAttribute("errors", violations);
+        if (!violations.isEmpty()) {
+            model.addAttribute("customErrors", customErrors);
+            return "errorPage";
+        }
+        try {
+            superHeroServiceLayer.addHero(hero);
+        } catch (ClassDataValidationException e) {
+            LocationController.exceptionErrorMessage = e.getMessage();
+            return "redirect/errorPage";
         }
         return "redirect:/heros";
     }
 
     @PostMapping("editHero")
-    public String editHero(HttpServletRequest request) {
+    public String editHero(HttpServletRequest request, Model model) {
+        customErrors = new ArrayList<>();
         String[] organizationIds = request.getParameterValues("organizationId");
         String heroName = request.getParameter("name");
         String heroDescription = request.getParameter("description");
         String superPowerId = request.getParameter("superPowerId");
         String heroId = request.getParameter("id");
-        SuperPower superPower;
-        List<Organization> organizations;
-        try {
-            superPower = superHeroServiceLayer.getSuperPowerById(Integer.parseInt(superPowerId));
-            organizations = new ArrayList<>();
-            for (String organizationId : organizationIds) {
-                Organization organization = superHeroServiceLayer.getOrganizationById(Integer.parseInt(organizationId));
-                organizations.add(organization);
-            }
-        } catch (ClassNoSuchRecordException e) {
-            LocationController.exceptionErrorMessage = e.getMessage();
-            return "redirect/errorPage";
-        }
+        SuperPower superPower = null;
+        List<Organization> organizations = new ArrayList<>();
         Hero hero = new Hero();
         hero.setId(Integer.parseInt(heroId));
         hero.setName(heroName);
         hero.setDescription(heroDescription);
-        hero.setSuperPowers(superPower);
-        hero.setOrganizations(organizations);
-        try {
-            superHeroServiceLayer.updateHero(hero);
-        } catch (ClassDataValidationException e) {
+        violations = validate.validate(hero);
+        model.addAttribute("errors", violations);
+        if (organizationIds == null) {
+            customErrors.add(("You must select atleast one organization"));
+            model.addAttribute("customErrors", customErrors);
+        } else {
+            try {
+                for (String organizationId : organizationIds) {
+                    Organization organization = superHeroServiceLayer.getOrganizationById(Integer.parseInt(organizationId));
+                    organizations.add(organization);
+                }
+            } catch (ClassNoSuchRecordException e) {
+                LocationController.exceptionErrorMessage = e.getMessage();
+                return "redirect/errorPage";
+            }
         }
-        return "redirect:/heros";
+        try {
+            superPower = superHeroServiceLayer.getSuperPowerById(Integer.parseInt(superPowerId));
+        } catch (ClassNoSuchRecordException e) {
+            LocationController.exceptionErrorMessage = e.getMessage();
+            customErrors.add(("You must select atleast one Super Power"));
+            model.addAttribute("customErrors", customErrors);
+            return "redirect/errorPage";
+        }
+
+        if (!violations.isEmpty()) {
+            model.addAttribute("customErrors", customErrors);
+            return "errorPage";
+        } else {
+            hero.setSuperPowers(superPower);
+            hero.setOrganizations(organizations);
+            try {
+                superHeroServiceLayer.updateHero(hero);
+            } catch (ClassDataValidationException e) {
+                model.addAttribute("customErrors", customErrors);
+                return "errorPage";
+            }
+            return "redirect:/heros";
+        }
     }
 
     @PostMapping("/deleteHero")
@@ -174,7 +218,7 @@ public class HeroController {
         model.addAttribute("heroLocations", heroLocations);
         model.addAttribute("heros", heros);
         try {
-           organizations = superHeroServiceLayer.getAllOrganizations();
+            organizations = superHeroServiceLayer.getAllOrganizations();
             model.addAttribute("organizations", organizations);
             superPowers = superHeroServiceLayer.getAllSuperPowers();
             model.addAttribute("superPowers", superPowers);

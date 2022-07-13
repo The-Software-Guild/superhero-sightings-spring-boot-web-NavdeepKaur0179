@@ -31,7 +31,7 @@ public class Location {
     @Size(max = 50, message="Latitude must be less than 50 characters.")
     private String latitude;
     
-     @NotBlank(message = "Longitude must not be empty.")
+    @NotBlank(message = "Longitude must not be empty.")
     @Size(max = 50, message="Longitude Longitude must be less than 50 characters.")
     private String longitude;
 

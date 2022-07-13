@@ -8,8 +8,13 @@ package com.navdeep.superheroSightings.controllers;
 import com.navdeep.superheroSightings.entities.Organization;
 import com.navdeep.superheroSightings.service.ClassDataValidationException;
 import com.navdeep.superheroSightings.service.SuperHeroServiceLayer;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +30,9 @@ public class OrganizationController {
 
     @Autowired
     final SuperHeroServiceLayer superHeroServiceLayer;
+    
+    Set<ConstraintViolation<Organization>> violations = new HashSet<>();
+    Validator validate = Validation.buildDefaultValidatorFactory().getValidator();
 
     public OrganizationController(SuperHeroServiceLayer superHeroServiceLayer) {
         this.superHeroServiceLayer = superHeroServiceLayer;

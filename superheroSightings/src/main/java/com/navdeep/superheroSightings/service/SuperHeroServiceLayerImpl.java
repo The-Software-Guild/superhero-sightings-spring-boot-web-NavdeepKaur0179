@@ -200,14 +200,19 @@ public class SuperHeroServiceLayerImpl implements SuperHeroServiceLayer {
     public Sighting addSighting(Sighting sighting) throws ClassDataValidationException {
         if (!validateSightingData(sighting)) {
             throw new ClassDataValidationException(
-                    "ERROR: All fields [ Location, hero, date ] are required.");
+                    "ERROR: All fields [ Location, hero, date ] are required and [date] cannot be of future.");
         }
         return sightingDao.addSighting(sighting);
     }
 
     @Override
-    public void updateSighting(Sighting sighting) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void updateSighting(Sighting sighting) throws ClassDataValidationException {
+        if (!validateSightingData(sighting)) {
+            throw new ClassDataValidationException(
+                    "ERROR: All fields [ Location, hero, date ] are required and [date] cannot be of future.");
+        }
+        sightingDao.updateSighting(sighting);
+
     }
 
     @Override
@@ -264,7 +269,12 @@ public class SuperHeroServiceLayerImpl implements SuperHeroServiceLayer {
         if (sighting.getLocation() == null
                 || sighting.getHero() == null || sighting.getDate() == null) {
             return false;
+        } else if (sighting.getDate() != null) {
+            if (sighting.getDate().isAfter(LocalDateTime.now())) {
+                return false;
+            }
         }
+
         return true;
     }
 
@@ -298,10 +308,16 @@ public class SuperHeroServiceLayerImpl implements SuperHeroServiceLayer {
 
     @Override
     public void updateSuperPower(SuperPower superPower) throws ClassDataValidationException {
+        if (!validateSuperPowerData(superPower)) {
+            throw new ClassDataValidationException(
+                    "ERROR: Field [ name ] is required.");
+        }
+        superPowerDao.updateSuperPower(superPower);
     }
 
     @Override
     public void deleteSuperPowerById(int id) {
+        superPowerDao.deleteSuperPowerById(id);
     }
 
     private boolean validateSuperPowerData(SuperPower superPower) {

@@ -54,60 +54,65 @@ public class HeroController {
 //    @Autowired
 //    SightingDao sightingDao;
 
-    Set<ConstraintViolation<Hero>> violations = new HashSet<>();
-    String exceptionErrorMessage = "";
+    Set<ConstraintViolation<Hero>> violations = new HashSet<>();   
     Map<Integer, List<Location>> heroLocations = new HashMap<>();
+    List<Hero> heros;
+    List<Organization> organizations;
+    List<SuperPower> superPowers;
 
     @GetMapping("heros")
     public String getHeros(Model model) {
         try {
-            List<Hero> heros = superHeroServiceLayer.getAllHeros();
+            heros = superHeroServiceLayer.getAllHeros();
             for (Hero hero : heros) {
                 heroLocations.put(hero.getId(), superHeroServiceLayer.getAllLocationsHeroSeen(hero));
             }
             model.addAttribute("heroLocations", heroLocations);
             model.addAttribute("heros", heros);
         } catch (ClassEmptyListException e) {
-            exceptionErrorMessage = e.getMessage();
+            LocationController.exceptionErrorMessage = e.getMessage();
             return "redirect/errorPage";
         }
         try {
-            List<Organization> organizations = superHeroServiceLayer.getAllOrganizations();
+           organizations = superHeroServiceLayer.getAllOrganizations();
             model.addAttribute("organizations", organizations);
-            List<SuperPower> superPowers = superHeroServiceLayer.getAllSuperPowers();
+            superPowers = superHeroServiceLayer.getAllSuperPowers();
             model.addAttribute("superPowers", superPowers);
         } catch (ClassEmptyListException e) {
-            exceptionErrorMessage = e.getMessage();
+            LocationController.exceptionErrorMessage = e.getMessage();
             return "redirect/errorPage";
         }
-        model.addAttribute("errors", violations);
+        //model.addAttribute("errors", violations);
         return "heros";
     }
 
     @PostMapping("/addHero")
-    public String addHero(Hero hero, HttpServletRequest request) {
+    public String addHero(Hero hero, HttpServletRequest request,Model model) {
         String[] organizationIds = request.getParameterValues("organizationId");
         List<Organization> organizations = new ArrayList<>();
         SuperPower superPower;
-        try {
+        if (organizationIds!=null) {
+           try {
             for (String organizationId : organizationIds) {
                 organizations.add(superHeroServiceLayer.getOrganizationById(Integer.parseInt(organizationId)));
             }
             superPower = superHeroServiceLayer.getSuperPowerById(Integer.parseInt(request.getParameter("superPowerId")));
         } catch (ClassNoSuchRecordException e) {
-            exceptionErrorMessage = e.getMessage();
+            LocationController.exceptionErrorMessage = e.getMessage();
             return "redirect/errorPage";
         }
-        hero.setOrganizations(organizations);
+        hero.setOrganizations(organizations);  
         hero.setSuperPowers(superPower);
+        }
         //validate inputs before sending to Dao
         Validator validate = Validation.buildDefaultValidatorFactory().getValidator();
         violations = validate.validate(hero);
+        model.addAttribute("errors", violations);
         if (violations.isEmpty()) {
             try {
                 superHeroServiceLayer.addHero(hero);
             } catch (ClassDataValidationException e) {
-                exceptionErrorMessage = e.getMessage();
+                LocationController.exceptionErrorMessage = e.getMessage();
                 return "redirect/errorPage";
             }
         }
@@ -131,7 +136,7 @@ public class HeroController {
                 organizations.add(organization);
             }
         } catch (ClassNoSuchRecordException e) {
-            exceptionErrorMessage = e.getMessage();
+            LocationController.exceptionErrorMessage = e.getMessage();
             return "redirect/errorPage";
         }
         Hero hero = new Hero();
@@ -152,4 +157,32 @@ public class HeroController {
         superHeroServiceLayer.deleteHeroById(Integer.parseInt(request.getParameter("id")));
         return "redirect:/heros";
     }
+
+    @PostMapping("herosByOrganization")
+    public String herosByOrganization(HttpServletRequest request, Model model) {
+        Organization organization;
+        try {
+            organization = superHeroServiceLayer.getOrganizationById(Integer.parseInt(request.getParameter("organizationOfHeros")));
+        } catch (ClassNoSuchRecordException e) {
+            LocationController.exceptionErrorMessage = e.getMessage();
+            return "redirect/errorPage";
+        }
+        List<Hero> heros = superHeroServiceLayer.getAllMemberHerosOfOrganization(organization);
+        for (Hero hero : heros) {
+            heroLocations.put(hero.getId(), superHeroServiceLayer.getAllLocationsHeroSeen(hero));
+        }
+        model.addAttribute("heroLocations", heroLocations);
+        model.addAttribute("heros", heros);
+        try {
+           organizations = superHeroServiceLayer.getAllOrganizations();
+            model.addAttribute("organizations", organizations);
+            superPowers = superHeroServiceLayer.getAllSuperPowers();
+            model.addAttribute("superPowers", superPowers);
+        } catch (ClassEmptyListException e) {
+            LocationController.exceptionErrorMessage = e.getMessage();
+            return "redirect/errorPage";
+        }
+        return "heros";
+    }
+
 }

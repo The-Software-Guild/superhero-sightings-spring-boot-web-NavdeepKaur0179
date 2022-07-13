@@ -26,11 +26,11 @@ public class LocationController {
 
     @Autowired
     final SuperHeroServiceLayer superHeroServiceLayer;
-
+  
     public LocationController(SuperHeroServiceLayer superHeroServiceLayer) {
         this.superHeroServiceLayer = superHeroServiceLayer;
     }
-    String exceptionErrorMessage = "";
+    public static String exceptionErrorMessage = "";
 
     @GetMapping("locations")
     public String getLocations(Model model) {

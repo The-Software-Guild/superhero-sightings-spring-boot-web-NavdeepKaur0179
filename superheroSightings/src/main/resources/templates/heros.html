@@ -11,6 +11,7 @@
               integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
             <title>SuperHeroSighting</title>
+            
     </head>
 
     <body>
@@ -21,19 +22,19 @@
                 </div>
             </div>
             <div class="row m-4 ">
-                <div class="col text-center m-3">
+                <div class="col text-center m-3 small">
                     <a href="heros" class="btn btn-outline-primary btn-lg">Heroes & Villians</a>
                 </div>
-                <div class="col text-center m-3">
+                <div class="col text-center m-3 small">
                     <a href="superPowers" class="btn btn-outline-primary btn-lg">Super Powers</a>
                 </div>
-                <div class="col text-center m-3">
+                <div class="col text-center m-3 small">
                     <a href="locations" class="btn btn-outline-primary btn-lg">Locations</a>
                 </div>
-                <div class="col text-center m-3">
+                <div class="col text-center m-3 small">
                     <a href="organizations" class="btn btn-outline-primary btn-lg">Organizations</a>
                 </div>
-                <div class="col text-center m-3">
+                <div class="col text-center m-3 small">
                     <a href="sightings" class="btn btn-outline-primary btn-lg">Sightings</a>
                 </div>
             </div>
@@ -110,8 +111,10 @@
         </div>
 
         <div class="row m-4 border border-primary">
-            <div class="col text-center m-3">
-                <!--                    <h3>Heros</h3>-->
+            <div class="col m-3">
+                 <div class="col-12 text-center m-3">
+                    <span class="h3">Heroes List</span>     
+                </div>
                 <table class="table table-sm text-left">
                     <thead>
                         <tr>
@@ -272,8 +275,28 @@
                     </tbody>
                 </table>
             </div>
-
         </div>
+         <div class="row m-4 text-center border border-primary">
+            <div class="col-4"></div>
+            <div class="col-4 m-2">
+                <form action="herosByOrganization" method="POST">
+                    <div class="form-group row">
+                        <label for="date" class="col-6 col-form-label text-right font-weight-bold">Members of Organization</label>
+                        <div class="col-6">
+                            <select  id="organizationOfHeros" class="form-control" name="organizationOfHeros">
+                                <option value="" selected disabled hidden>--Choose Organization--</option>
+                                <option th:each="organization : ${organizations}"
+                                        th:value="${organization.id}"
+                                        th:text="${organization.name}">Select Organization</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                    <a href="/heros" class="btn btn-secondary">Reset</a>                    
+                </form>   
+            </div>
+            <div class="col-4"></div>
+         </div>
         </div>
         <!-- Optional JavaScript -->
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->

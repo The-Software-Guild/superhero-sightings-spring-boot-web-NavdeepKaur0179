@@ -33,7 +33,7 @@ public class HomeController {
     public String getSightingsForHome(Model model) {
         List<Sighting> sightings;
         try {
-            sightings = superHeroServiceLayer.getAllSightings();
+            sightings = superHeroServiceLayer.getAllSightings().subList(0, 10);
         } catch (ClassEmptyListException e) {
             exceptionErrorMessage = e.getMessage();
             return "redirect:/errorPage";

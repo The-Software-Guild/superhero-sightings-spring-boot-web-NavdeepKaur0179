@@ -77,7 +77,10 @@
         </div>
 
         <div class="row m-4 border border-primary">
-            <div class="col text-center m-3">
+            <div class="col m-3">
+                <div class="col-12 text-center m-3">
+                    <span class="h3">Super Powers List</span>     
+                </div>
                 <table class="table table-sm text-left">
                     <thead>
                         <tr>
@@ -92,19 +95,19 @@
                             <td th:text="${superPower.superPower}">Super Power name</td>
                             <td th:text="${superPower.description}">Description</td>                          
                             <td><a th:attr="href=${'#editModal'+superPower.id}" data-toggle="modal" th:data-row="${superPower}">Edit</a></td>
-                            <!--*****************Edit Location Modal******************-->                       
+                            <!--*****************Edit superPowers Modal******************-->                       
                             <div th:each="superPower : ${superPowers}" class="modal" th:attr="id=${'editModal'+ superPower.id}" tabindex="-1" role="dialog">
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title">Edit Location</h5>
+                                            <h5 class="modal-title">Edit SuperPowers</h5>
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
                                         <div class="modal-body">
 
-                                            <form type="form" action="editLocation" method="POST">
+                                            <form type="form" action="editSuperPower" method="POST">
                                                 <div class="form-group">
                                                     <label for="superPower">Name</label>
                                                     <input type="text" class="form-control" id="superPower" name="superPower" 

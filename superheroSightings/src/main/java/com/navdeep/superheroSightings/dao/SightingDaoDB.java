@@ -30,13 +30,13 @@ public class SightingDaoDB implements SightingDao {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
-    
+
     @Autowired
     HeroDao heroDao;
-    
+
     @Autowired
     LocationDao locationDao;
-    
+
     final String SELECT_SIGHTING_BY_ID = "SELECT * FROM sighting WHERE id=?";
     final String SELECT_ALL_SIGHTINGS = "SELECT * FROM sighting";
     final String INSERT_SIGHTING = "INSERT INTO sighting(locationId,heroId,date,description) VALUES(?,?,?,?)";
@@ -45,7 +45,7 @@ public class SightingDaoDB implements SightingDao {
     final String SELECT_SIGHTING_BY_LOCATION = "SELECT * FROM sighting WHERE locationId=?";
     final String SELECT_ALL_LOCATIONS_BY_HERO_ID = "SELECT l.* FROM location l JOIN sighting s ON "
             + "l.id=s.locationId WHERE heroId=?";
-    final String SELECT_ALL_SIGHTING_BY_DATE = "SELECT * FROM sighting WHERE date=?";
+    final String SELECT_ALL_SIGHTING_BY_DATE = "SELECT * FROM sighting WHERE DATE(date)=?";
     final String SELECT_LOCATION_FOR_SIGHTING = "SELECT l.* FROM location l JOIN sighting s ON l.id=s.locationId "
             + "WHERE s.id=?";
     final String SELECT_HERO_FOR_SIGHTING = "SELECT h.* FROM hero h JOIN sighting s ON h.id=s.heroId "
@@ -55,7 +55,7 @@ public class SightingDaoDB implements SightingDao {
     public Sighting getSighingById(int id) {
         try {
             Sighting sighting = jdbcTemplate.queryForObject(SELECT_SIGHTING_BY_ID,
-                    new SightingRowMapper(), id);       
+                    new SightingRowMapper(), id);
             return sighting;
         } catch (DataAccessException e) {
             return null;
@@ -64,7 +64,7 @@ public class SightingDaoDB implements SightingDao {
 
     @Override
     public List<Sighting> getAllSightings() {
-        List<Sighting> sightings= jdbcTemplate.query(SELECT_ALL_SIGHTINGS, new SightingRowMapper());       
+        List<Sighting> sightings = jdbcTemplate.query(SELECT_ALL_SIGHTINGS, new SightingRowMapper());
         return sightings;
     }
 
@@ -103,9 +103,9 @@ public class SightingDaoDB implements SightingDao {
 
     @Override
     public List<Sighting> getAllSightingByLocation(Location location) {
-        List<Sighting> sightings= jdbcTemplate.query(SELECT_SIGHTING_BY_LOCATION,
+        List<Sighting> sightings = jdbcTemplate.query(SELECT_SIGHTING_BY_LOCATION,
                 new SightingRowMapper(),
-                location.getId());        
+                location.getId());
         return sightings;
     }
 
@@ -117,10 +117,10 @@ public class SightingDaoDB implements SightingDao {
     }
 
     @Override
-    public List<Sighting> getAllSightingByDate(LocalDateTime date) {        
-        List<Sighting> sightings= jdbcTemplate.query(SELECT_ALL_SIGHTING_BY_DATE,
+    public List<Sighting> getAllSightingByDate(LocalDateTime date) {       
+        List<Sighting> sightings = jdbcTemplate.query(SELECT_ALL_SIGHTING_BY_DATE,
                 new SightingRowMapper(),
-                Timestamp.valueOf(date));        
+                date);
         return sightings;
     }
 
@@ -130,7 +130,6 @@ public class SightingDaoDB implements SightingDao {
 //                id);
 //        
 //    }
-
     private Location getLocationForSighting(int id) {
         return jdbcTemplate.queryForObject(SELECT_LOCATION_FOR_SIGHTING,
                 new LocationRowMapper(),
@@ -138,15 +137,15 @@ public class SightingDaoDB implements SightingDao {
     }
 
     public final class SightingRowMapper implements RowMapper<Sighting> {
-  
+
         @Override
         public Sighting mapRow(ResultSet rs, int rowNum) throws SQLException {
             Sighting sighting = new Sighting();
-             sighting.setId(rs.getInt("id"));
+            sighting.setId(rs.getInt("id"));
             sighting.setDate(rs.getTimestamp("date").toLocalDateTime());
             sighting.setDescription(rs.getString("description"));
             sighting.setHero(heroDao.getHeroById(Integer.parseInt(rs.getString("heroId"))));
-            sighting.setLocation(locationDao.getLocationById(Integer.parseInt(rs.getString("locationId"))));            
+            sighting.setLocation(locationDao.getLocationById(Integer.parseInt(rs.getString("locationId"))));
             return sighting;
         }
 

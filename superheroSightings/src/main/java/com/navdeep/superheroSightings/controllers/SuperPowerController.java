@@ -30,8 +30,7 @@ public class SuperPowerController {
     public SuperPowerController(SuperHeroServiceLayer superHeroServiceLayer) {
         this.superHeroServiceLayer = superHeroServiceLayer;
     }
-    String exceptionErrorMessage = "";
-
+    
     @GetMapping("superPowers")
     public String getSuperPowers(Model model) {
         try {
@@ -39,7 +38,7 @@ public class SuperPowerController {
             model.addAttribute("superPowers", superPowers);
             return "superPowers";
         } catch (ClassEmptyListException e) {
-            exceptionErrorMessage = e.getMessage();
+            LocationController.exceptionErrorMessage = e.getMessage();
             return "redirect:/errorPage";
         }
 
@@ -51,34 +50,29 @@ public class SuperPowerController {
             superHeroServiceLayer.addSuperPower(superPower);
             return "redirect:/superPowers";
         } catch (ClassDataValidationException e) {
-            exceptionErrorMessage = e.getMessage();
+            LocationController.exceptionErrorMessage = e.getMessage();
             return "redirect:/errorPage";
         }
     }
 
     @PostMapping("editSuperPower")
-    public String editSuperPower(HttpServletRequest request) {
-        String superPowerName = request.getParameter("superPower");
-        String superPowerDescription = request.getParameter("description");
-        String superPowerId = request.getParameter("id");
-
-        SuperPower superPower = new SuperPower();
-        superPower.setId(Integer.parseInt(superPowerId));
-        superPower.setSuperPower(superPowerName);
-        superPower.setDescription(superPowerDescription);
+    public String editSuperPower(SuperPower superPower,HttpServletRequest request) {
+        String superPowerId = request.getParameter("id");       
+        superPower.setId(Integer.parseInt(superPowerId));        
         try {
             superHeroServiceLayer.updateSuperPower(superPower);
             return "redirect:/superPowers";
 
         } catch (ClassDataValidationException e) {
-            exceptionErrorMessage = e.getMessage();
+            LocationController.exceptionErrorMessage = e.getMessage();
             return "redirect:/errorPage";
         }
     }
 
     @PostMapping("/deleteSuperPower")
     public String deleteSuperPower(HttpServletRequest request) {
-        superHeroServiceLayer.deleteSuperPowerById(Integer.parseInt(request.getParameter("id")));
+        int id=Integer.parseInt(request.getParameter("id"));
+        superHeroServiceLayer.deleteSuperPowerById(id);
         return "redirect:/superPowers";
     }
 }

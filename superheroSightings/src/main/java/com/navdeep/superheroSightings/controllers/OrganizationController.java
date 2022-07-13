@@ -29,26 +29,13 @@ public class OrganizationController {
     public OrganizationController(SuperHeroServiceLayer superHeroServiceLayer) {
         this.superHeroServiceLayer = superHeroServiceLayer;
     }
-//    @Autowired
-//    HeroDao heroDao;
-//    
-//    @Autowired
-//    LocationDao locationDao;
-//    
-//    @Autowired
-//    OrganizationDao organizationDao;
-//    
-//    @Autowired
-//    SightingDao sightingDao;
-    String exceptionErrorMessage = "";
-
     @GetMapping("organizations")
     public String getOrganizations(Model model) {
         try {
             List<Organization> organizations = superHeroServiceLayer.getAllOrganizations();
             model.addAttribute("organizations", organizations);
         } catch (Exception e) {
-            exceptionErrorMessage = e.getMessage();
+            LocationController.exceptionErrorMessage = e.getMessage();
             return "redirect:/errorPage";
         }
         return "organizations";
@@ -59,7 +46,7 @@ public class OrganizationController {
         try {
             superHeroServiceLayer.addOrganization(organization);
         } catch (ClassDataValidationException e) {
-            exceptionErrorMessage = e.getMessage();
+            LocationController.exceptionErrorMessage = e.getMessage();
             return "redirect:/errorPage";
         }
         return "redirect:/organizations";
@@ -80,7 +67,7 @@ public class OrganizationController {
         try {
             superHeroServiceLayer.updateorganization(organization);
         } catch (ClassDataValidationException e) {
-            exceptionErrorMessage = e.getMessage();
+            LocationController.exceptionErrorMessage = e.getMessage();
             return "redirect:/errorPage";
         }
         return "redirect:/organizations";

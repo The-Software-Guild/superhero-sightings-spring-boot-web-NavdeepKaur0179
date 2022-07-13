@@ -12,6 +12,7 @@ import com.navdeep.superheroSightings.service.ClassDataValidationException;
 import com.navdeep.superheroSightings.service.ClassEmptyListException;
 import com.navdeep.superheroSightings.service.ClassNoSuchRecordException;
 import com.navdeep.superheroSightings.service.SuperHeroServiceLayer;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -34,19 +35,18 @@ public class SightingController {
     public SightingController(SuperHeroServiceLayer superHeroServiceLayer) {
         this.superHeroServiceLayer = superHeroServiceLayer;
     }
-    String exceptionErrorMessage = "";
+    List<Hero> heroes;
+    List<Sighting> sightings;
+    List<Location> locations;
 
     @GetMapping("sightings")
     public String getSightings(Model model) {
-        List<Hero> heroes;
-         List<Sighting> sightings;
-         List<Location> locations;
         try {
             heroes = superHeroServiceLayer.getAllHeros();
             sightings = superHeroServiceLayer.getAllSightings();
             locations = superHeroServiceLayer.getAllLocations();
         } catch (ClassEmptyListException e) {
-            exceptionErrorMessage = e.getMessage();
+            LocationController.exceptionErrorMessage = e.getMessage();
             return "redirect:/errorPage";
         }
         model.addAttribute("heroes", heroes);
@@ -66,18 +66,21 @@ public class SightingController {
             String heroId = request.getParameter("heroId");
             hero = superHeroServiceLayer.getHeroById(Integer.parseInt(heroId));
         } catch (ClassNoSuchRecordException e) {
-            exceptionErrorMessage = e.getMessage();
+            LocationController.exceptionErrorMessage = e.getMessage();
             return "redirect:/errorPage";
         }
         Sighting sighting = new Sighting();
         sighting.setHero(hero);
         sighting.setLocation(location);
+        if(request.getParameter("date")!="")
+        {
         sighting.setDate(LocalDateTime.parse(request.getParameter("date")));
+        }        
         sighting.setDescription(request.getParameter("description"));
         try {
             superHeroServiceLayer.addSighting(sighting);
         } catch (ClassDataValidationException e) {
-            exceptionErrorMessage = e.getMessage();
+            LocationController.exceptionErrorMessage = e.getMessage()+"\n"+ "Please go back from browser's back button to return to correct the form entries";
             return "redirect:/errorPage";
         }
         return "redirect:/sightings";
@@ -93,7 +96,7 @@ public class SightingController {
             String heroId = request.getParameter("heroId");
             hero = superHeroServiceLayer.getHeroById(Integer.parseInt(heroId));
         } catch (ClassNoSuchRecordException e) {
-            exceptionErrorMessage = e.getMessage();
+            LocationController.exceptionErrorMessage = e.getMessage();
             return "redirect:/errorPage";
         }
         LocalDateTime date = LocalDateTime.parse(request.getParameter("date"));
@@ -109,7 +112,7 @@ public class SightingController {
         try {
             superHeroServiceLayer.updateSighting(sighting);
         } catch (ClassDataValidationException e) {
-            exceptionErrorMessage = e.getMessage();
+            LocationController.exceptionErrorMessage = e.getMessage();
             return "redirect:/errorPage";
         }
 
@@ -121,4 +124,48 @@ public class SightingController {
         superHeroServiceLayer.deleteSightingById(Integer.parseInt(request.getParameter("id")));
         return "redirect:/sightings";
     }
+
+    @PostMapping("sightingsByDate")
+    public String sightingsByDate(HttpServletRequest request, Model model) {
+        LocalDate sightingDate = LocalDate.parse(request.getParameter("datetime"));
+        //LocalDate sightingDate = LocalDate.parse(dateTime);
+        LocalDateTime sightingDateTime = sightingDate.atStartOfDay();
+        sightings = superHeroServiceLayer.getAllSightingByDate(sightingDateTime);
+        model.addAttribute("sightings", sightings);
+         try {
+            heroes = superHeroServiceLayer.getAllHeros();
+            locations = superHeroServiceLayer.getAllLocations();
+        } catch (ClassEmptyListException e) {
+            LocationController.exceptionErrorMessage = e.getMessage();
+            return "redirect:/errorPage";
+        }
+        model.addAttribute("heroes", heroes);
+        model.addAttribute("locations", locations);
+        return "sightings";
+    }
+
+    @PostMapping("sightingsByLocation")
+    public String sightingsByLocation(HttpServletRequest request, Model model) {
+        String locationId = request.getParameter("locationId");
+        Location location;
+        try {
+            location = superHeroServiceLayer.getLocationById(Integer.parseInt(locationId));
+        } catch (ClassNoSuchRecordException e) {
+            LocationController.exceptionErrorMessage = e.getMessage();
+            return "redirect:/errorPage";
+        }
+        sightings = superHeroServiceLayer.getAllSightingByLocation(location);
+        model.addAttribute("sightings", sightings);
+        try {
+            heroes = superHeroServiceLayer.getAllHeros();
+            locations = superHeroServiceLayer.getAllLocations();
+        } catch (ClassEmptyListException e) {
+            LocationController.exceptionErrorMessage = e.getMessage();
+            return "redirect:/errorPage";
+        }
+        model.addAttribute("heroes", heroes);
+        model.addAttribute("locations", locations);
+        return "sightings";
+    }
+
 }

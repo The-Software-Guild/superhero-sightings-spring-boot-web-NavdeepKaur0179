@@ -35,7 +35,21 @@
                 </div>
             </div>
         </div>
-        
-        <h1 th:text="${exceptionErrorMessage}">Exception Error Message</h1>
+
+        <div class=" m-4 border border-primary  text-center">
+            <p class="h4 m-3 alert alert-danger"> Something went wrong, some fields on page were invalid. Please try again with valid entries.
+                <br>
+            </p>
+            <p class=" h4 m-3 alert alert-danger"   th:text="${exceptionErrorMessage}">
+                Exception Error Message
+            </p>
+            <div class="col-12 m-1 text-center" 
+                 th:if="${!errors.isEmpty()}">
+                <p class="alert alert-danger" 
+                   th:each="error : ${errors}" th:text="${error.message}">Error message</p>
+            </div>
+        </div>
+
+
     </body>
 </html>

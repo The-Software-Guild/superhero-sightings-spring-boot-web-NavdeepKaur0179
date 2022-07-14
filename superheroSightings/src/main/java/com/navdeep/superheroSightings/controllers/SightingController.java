@@ -73,7 +73,7 @@ public class SightingController {
         Hero hero = null;
         Location location = null;
         String locationId = request.getParameter("locationId");
-
+        System.out.println(locationId);
         //adding error message for missing location
         if (locationId != null) {
             try {
@@ -133,16 +133,20 @@ public class SightingController {
             model.addAttribute("customErrors", customErrors);
             return "errorPage";
         } else {
-            error.setMessage("No Other error");
+            error.setMessage("Errors are as follows:");
             model.addAttribute("errors", error);
             model.addAttribute("customErrors", customErrors);
-            try {
-                superHeroServiceLayer.addSighting(sighting);
-            } catch (ClassDataValidationException e) {
-                LocationController.exceptionErrorMessage = e.getMessage() + "\n" + "Please go back from browser's back button to return to correct the form entries";
-                return "redirect:/errorPage";
+            if (customErrors.isEmpty()) {
+                try {
+                    superHeroServiceLayer.addSighting(sighting);
+                } catch (ClassDataValidationException e) {
+                    LocationController.exceptionErrorMessage = e.getMessage() + "\n" + "Please go back from browser's back button to return to correct the form entries";
+                    return "redirect:/errorPage";
+                }
+                return "redirect:/sightings";
+            } else {
+                return "errorPage";
             }
-            return "redirect:/sightings";
         }
     }
 
@@ -160,15 +164,14 @@ public class SightingController {
 //            LocationController.exceptionErrorMessage = e.getMessage();
 //            return "redirect:/errorPage";
 //        }
-        
 
-        //adding error message for missing location
         if (locationId != null) {
             try {
                 location = superHeroServiceLayer.getLocationById(Integer.parseInt(locationId));
-
             } catch (ClassNoSuchRecordException e) {
                 LocationController.exceptionErrorMessage = e.getMessage();
+                customErrors.add(("You must select atleast one Location"));
+                model.addAttribute("customErrors", customErrors);
                 return "redirect:/errorPage";
             }
         } else {
@@ -183,23 +186,28 @@ public class SightingController {
                 hero = superHeroServiceLayer.getHeroById(Integer.parseInt(heroId));
             } catch (ClassNoSuchRecordException e) {
                 LocationController.exceptionErrorMessage = e.getMessage();
+                customErrors.add(("You must select atleast one hero for sighting record."));
+                model.addAttribute("customErrors", customErrors);
                 return "redirect:/errorPage";
             }
         } else {
             customErrors.add(("You must select atleast one hero for sighting record."));
             model.addAttribute("customErrors", customErrors);
         }
-        String sightingDescription = request.getParameter("description");
+
         Sighting sighting = new Sighting();
         sighting.setHero(hero);
         sighting.setLocation(location);
+        sighting.setDescription(request.getParameter("description"));
+        sighting.setId(Integer.parseInt(request.getParameter("id")));
+        LocalDateTime dateTime;
 
-        LocalDateTime date = LocalDateTime.parse(request.getParameter("date"));
         //adding error message for missing date
-        if (!date.equals("")) {
+        if (!request.getParameter("date").equals("")) {
             //adding error message for future/Invalid date selected
             if (!LocalDateTime.parse(request.getParameter("date")).isAfter(LocalDateTime.now())) {
-                sighting.setDate(LocalDateTime.parse(request.getParameter("date")));
+                dateTime=LocalDateTime.parse(request.getParameter("date"));
+                sighting.setDate(dateTime);
             } else {
                 customErrors.add("You cannot select future date for sighting record.");
                 model.addAttribute("customErrors", customErrors);
@@ -210,26 +218,28 @@ public class SightingController {
             model.addAttribute("customErrors", customErrors);
         }
 
-        sighting.setId(Integer.parseInt(request.getParameter("id")));
-        sighting.setDate(date);
-        sighting.setDescription(sightingDescription);
-
-         if (!violations.isEmpty()) {
+        //check violations else add
+        violations = validate.validate(sighting);
+        if (!violations.isEmpty()) {
             model.addAttribute("errors", violations);
             model.addAttribute("customErrors", customErrors);
             return "errorPage";
         } else {
-            error.setMessage("No Other error");
+            error.setMessage("Errors are as follows:");
             model.addAttribute("errors", error);
-            model.addAttribute("customErrors", customErrors);        
-            try {
-                superHeroServiceLayer.updateSighting(sighting);
-            } catch (ClassDataValidationException e) {
-                LocationController.exceptionErrorMessage = e.getMessage();
-                return "redirect:/errorPage";
+            model.addAttribute("customErrors", customErrors);
+            if (customErrors.isEmpty()) {
+                try {
+                    superHeroServiceLayer.updateSighting(sighting);
+                } catch (ClassDataValidationException e) {
+                    LocationController.exceptionErrorMessage = e.getMessage() + "\n" + "Please go back from browser's back button to return to correct the form entries";
+                    return "redirect:/errorPage";
+                }
+                return "redirect:/sightings";
+            } else {
+                return "errorPage";
             }
-            return "redirect:/sightings";
-        }
+        }  
     }
 
     @PostMapping("/deleteSighting")

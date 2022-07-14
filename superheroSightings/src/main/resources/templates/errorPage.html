@@ -17,7 +17,7 @@
         <div class="container">
             <div class="row">
                 <div class="col text-center">
-                    <h1>Super Hero Sighting</h1>
+                    <h1>The Hero Education and Relationship Organization (HERO) </h1>
                 </div>
             </div>
             <div class="row m-4 ">
@@ -42,15 +42,15 @@
         <div class=" m-4 border border-primary  text-center">
             <p class="h4 m-3 text-danger"> Something went wrong, some fields on page were invalid. Please go back using browser's back button and try again with valid entries.
                 <br>
-            </p>
-            <p class=" h4 m-3 alert alert-danger"  th:if='${!customErrors.isEmpty()}' th:each="error :${customErrors}" th:text="${error}">
-                Exception Error Message
-            </p>
+            </p>            
             <div class="col-12 m-1 text-center" 
                  th:if="${errors!=null}">
                 <p class="h4 m-3 alert alert-danger" 
                    th:each="error : ${errors}" th:text="${error.message}">Error message</p>
             </div>
+            <p class=" h4 m-3 alert alert-danger"  th:if='${!customErrors.isEmpty()}' th:each="error :${customErrors}" th:text="${error}">
+                Exception Error Message
+            </p>
         </div>
 
 

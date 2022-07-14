@@ -10,6 +10,7 @@ import com.navdeep.superheroSightings.entities.Location;
 import com.navdeep.superheroSightings.entities.Organization;
 import com.navdeep.superheroSightings.entities.Sighting;
 import com.navdeep.superheroSightings.entities.SuperPower;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -480,9 +481,11 @@ public class SightingDaoDBTest {
         location.setLongitude("Test Location longitude");
         location = locationDao.addLocation(location);
 
-        LocalDateTime dateTime=LocalDateTime.now().withNano(0);
+        LocalDate sightingDate = LocalDate.now();
+        LocalDateTime sightingDateTime = sightingDate.atStartOfDay();
+        
         Sighting sighting = new Sighting();
-        sighting.setDate(dateTime);
+        sighting.setDate(sightingDateTime);
         sighting.setHero(testHero);
         sighting.setLocation(location);
         sighting.setDescription("Test Sighting description");
@@ -504,14 +507,14 @@ public class SightingDaoDBTest {
         location2 = locationDao.addLocation(location2);
 
         Sighting sighting2 = new Sighting();
-        sighting2.setDate(dateTime);
+        sighting2.setDate(sightingDateTime);
         sighting2.setHero(testHero2);
         sighting2.setLocation(location2);
         sighting2.setDescription("Test Sighting 2 description");
 
         sighting2 = sightingDao.addSighting(sighting2);
 
-        List<Sighting> sightings = sightingDao.getAllSightingByDate(dateTime);
+        List<Sighting> sightings = sightingDao.getAllSightingByDate(sightingDateTime);
         assertEquals(2, sightings.size());
         assertTrue(sightings.contains(sighting));
         assertTrue(sightings.contains(sighting2));

@@ -50,7 +50,12 @@ public class OrganizationController {
     }
 
     @PostMapping("/addOrganization")
-    public String addOrganization(Organization organization) {
+    public String addOrganization(Organization organization,Model model) {
+        violations = validate.validate(organization);
+        model.addAttribute("errors", violations);
+        if (!violations.isEmpty()) {
+            return "errorPage";
+        }
         try {
             superHeroServiceLayer.addOrganization(organization);
         } catch (ClassDataValidationException e) {
@@ -61,7 +66,7 @@ public class OrganizationController {
     }
 
     @PostMapping("editOrganization")
-    public String editOrganization(HttpServletRequest request) {
+    public String editOrganization(HttpServletRequest request,Model model) {        
         String organizationName = request.getParameter("name");
         String organizationDescription = request.getParameter("description");
         String organizationAddress = request.getParameter("address");
@@ -72,6 +77,12 @@ public class OrganizationController {
         organization.setName(organizationName);
         organization.setDescription(organizationDescription);
         organization.setAddress(organizationAddress);
+        //check for violations
+        violations = validate.validate(organization);
+        model.addAttribute("errors", violations);
+        if (!violations.isEmpty()) {
+            return "errorPage";
+        }
         try {
             superHeroServiceLayer.updateorganization(organization);
         } catch (ClassDataValidationException e) {

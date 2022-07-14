@@ -519,4 +519,69 @@ public class SightingDaoDBTest {
         assertTrue(sightings.contains(sighting));
         assertTrue(sightings.contains(sighting2));
     }
+    
+    @Test
+    public void TestGetAllSightingsByHero()
+    {
+       Organization organization = new Organization();
+        organization.setName("Test Organization Name");
+        organization.setDescription("Test Organization description");
+        organization.setAddress("Test Organization address");
+        organization=organizationDao.addOrganization(organization);
+        Organization OrganizationfromDao = organizationDao.addOrganization(organization);
+
+        List<Organization> organizationList = new ArrayList<>();
+        organizationList.add(OrganizationfromDao);
+
+        SuperPower power = new SuperPower();
+        power.setSuperPower("test superPower");
+        power.setDescription("test superPower Description");
+        SuperPower superPowers = superPowerDao.addSuperPower(power);
+        Hero testHero = new Hero();
+
+        testHero.setName("test Hero Name 1");
+        testHero.setDescription("Test Hero Description");
+        testHero.setSuperPowers(superPowers);
+        testHero.setOrganizations(organizationList);
+        testHero = heroDao.addHero(testHero);
+
+        Location location = new Location();
+        location.setName("Test Location name");
+        location.setDescription("Test Location description");
+        location.setAddress("Test Location address");
+        location.setLatitude("Test Location latitude");
+        location.setLongitude("Test Location longitude");
+        location = locationDao.addLocation(location);
+
+        LocalDate sightingDate = LocalDate.now();
+        LocalDateTime sightingDateTime = sightingDate.atStartOfDay();
+        
+        Sighting sighting = new Sighting();
+        sighting.setDate(sightingDateTime);
+        sighting.setHero(testHero);
+        sighting.setLocation(location);
+        sighting.setDescription("Test Sighting description");
+        sighting = sightingDao.addSighting(sighting);
+
+        Location location2 = new Location();
+        location2.setName("Test Location 2 name");
+        location2.setDescription("Test Location 2 description");
+        location2.setAddress("Test Location  2 address");
+        location2.setLatitude("Test Location latitude");
+        location2.setLongitude("Test Location longitude");
+        location2 = locationDao.addLocation(location2);
+
+        Sighting sighting2 = new Sighting();
+        sighting2.setDate(sightingDateTime);
+        sighting2.setHero(testHero);
+        sighting2.setLocation(location2);
+        sighting2.setDescription("Test Sighting 2 description");
+
+        sighting2 = sightingDao.addSighting(sighting2);
+
+        List<Sighting> sightings = sightingDao.getAllSightingsByHero(testHero);
+        assertEquals(2, sightings.size());
+        assertTrue(sightings.contains(sighting));
+        assertTrue(sightings.contains(sighting2)); 
+    }
 }

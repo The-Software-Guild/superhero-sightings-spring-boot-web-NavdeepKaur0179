@@ -10,7 +10,7 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
               integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
-            <title>The Hero Education and Relationship Organization (HERO) </title>
+            <title>Super Sighting Sighting</title>
 
     </head>
 
@@ -18,7 +18,7 @@
         <div class="container">
             <div class="row">
                 <div class="col text-center">
-                    <h1>Super Sighting Sighting</h1>
+                    <h1>The Hero Education and Relationship Organization (HERO) </h1>
                 </div>
             </div>
             <div class="row m-4 ">
@@ -239,8 +239,7 @@
         </div>
 
         <div class="row m-4 text-center border border-primary">
-            <div class="col-2"></div>
-            <div class="col-4 m-2">
+            <div class="col-4 mt-2 mb-2">
                 <form action="sightingsByLocation" method="POST">
                     <div class="form-group row">
                         <label for="date" class="col-6 col-form-label text-right font-weight-bold">Sightings By Location:</label>
@@ -257,7 +256,7 @@
                     <a href="/sightings" class="btn btn-secondary">Reset</a>                    
                 </form>   
             </div>
-            <div class="col-4 m-2">
+            <div class="col-4 mt-2 mb-2">
                 <form action="sightingsByDate" method="POST">
                     <div class="form-group row">
                         <label for="date" class="col-6 col-form-label text-right font-weight-bold">Sightings By Date:</label>
@@ -269,7 +268,23 @@
                     <a href="/sightings" class="btn btn-secondary">Reset</a>                    
                 </form>                
             </div> 
-            <div class="col-2"></div>
+            <div class="col-4 mt-2 mb-2">
+                <form action="sightingsByHero" method="POST">
+                    <div class="form-group row">
+                        <label for="date" class="col-6 col-form-label text-right font-weight-bold">Sightings By Hero:</label>
+                        <div class="col-6">
+                            <select  id="heroId" class="form-control" name="heroId">
+                                <option value="" selected disabled hidden>--Choose Hero--</option>
+                                <option th:each="hero : ${heroes}"
+                                        th:value="${hero.id}"
+                                        th:text="${hero.name}">Select Hero</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                    <a href="/sightings" class="btn btn-secondary">Reset</a>                    
+                </form>   
+            </div>    
         </div>
         </div>
         <!-- Optional JavaScript -->

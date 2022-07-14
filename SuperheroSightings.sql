@@ -16,7 +16,8 @@ id INT PRIMARY KEY AUTO_INCREMENT,
 `name` VARCHAR(30) NOT NULL,
 description VARCHAR(255),
 superPowerId INT NOT NULL,
-FOREIGN KEY(superPowerId) REFERENCES superPower(id)
+FOREIGN KEY(superPowerId) REFERENCES superPower(id),
+Image BLOB NULL
 );
 
 CREATE TABLE IF NOT EXISTS organization

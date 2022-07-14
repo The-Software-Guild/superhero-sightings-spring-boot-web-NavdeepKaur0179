@@ -50,7 +50,8 @@ public class SightingDaoDB implements SightingDao {
             + "WHERE s.id=?";
     final String SELECT_HERO_FOR_SIGHTING = "SELECT h.* FROM hero h JOIN sighting s ON h.id=s.heroId "
             + "WHERE s.id=?";
-
+    final String SELECT_SIGHTINGS_BY_HERO="select * FROM sighting WHERE heroId=?";
+    
     @Override
     public Sighting getSighingById(int id) {
         try {
@@ -124,16 +125,17 @@ public class SightingDaoDB implements SightingDao {
         return sightings;
     }
 
-//    private Hero getHeroForSighting(int id) {
-//        return jdbcTemplate.queryForObject(SELECT_HERO_FOR_SIGHTING,
-//                new HeroRowMapper(),
-//                id);
-//        
-//    }
     private Location getLocationForSighting(int id) {
         return jdbcTemplate.queryForObject(SELECT_LOCATION_FOR_SIGHTING,
                 new LocationRowMapper(),
                 id);
+    }
+
+    @Override
+    public List<Sighting> getAllSightingsByHero(Hero hero) {
+        return jdbcTemplate.query(SELECT_SIGHTINGS_BY_HERO,
+                new SightingRowMapper(),
+                hero.getId());
     }
 
     public final class SightingRowMapper implements RowMapper<Sighting> {

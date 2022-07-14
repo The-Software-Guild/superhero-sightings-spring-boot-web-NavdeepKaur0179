@@ -293,5 +293,31 @@ public class SightingController {
         model.addAttribute("locations", locations);
         return "sightings";
     }
+    
+    @PostMapping("sightingsByHero")
+    public String sightingsByHero(HttpServletRequest request, Model model) {
+        String heroId = request.getParameter("heroId");
+        Hero hero;
+        try {
+            hero = superHeroServiceLayer.getHeroById(Integer.parseInt(heroId));
+        } catch (ClassNoSuchRecordException e) {
+            LocationController.exceptionErrorMessage = e.getMessage();
+            return "redirect:/errorPage";
+        }
+        sightings = superHeroServiceLayer.getAllSightingsByHero(hero);
+        model.addAttribute("sightings", sightings);
+        try {
+            heroes = superHeroServiceLayer.getAllHeros();
+            locations = superHeroServiceLayer.getAllLocations();
+        } catch (ClassEmptyListException e) {
+            LocationController.exceptionErrorMessage = e.getMessage();
+            return "redirect:/errorPage";
+        }
+        model.addAttribute("heroes", heroes);
+        model.addAttribute("locations", locations);
+        return "sightings";
+    }
+    
+    
 
 }

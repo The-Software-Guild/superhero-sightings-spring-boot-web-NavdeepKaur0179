@@ -71,7 +71,6 @@ public class LocationController {
         try {
             superHeroServiceLayer.addLocation(location);
             return "redirect:/locations";
-
         } catch (ClassDataValidationException e) {
             exceptionErrorMessage = e.getMessage();
             return "errorPage";

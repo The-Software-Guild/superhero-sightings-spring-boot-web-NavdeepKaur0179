@@ -326,4 +326,10 @@ public class SuperHeroServiceLayerImpl implements SuperHeroServiceLayer {
         }
         return true;
     }
+
+    @Override
+    public List<Sighting> getAllSightingsByHero(Hero hero) {
+        List<Sighting> sightings = sightingDao.getAllSightingsByHero(hero);
+        return sightings;
+    }
 }

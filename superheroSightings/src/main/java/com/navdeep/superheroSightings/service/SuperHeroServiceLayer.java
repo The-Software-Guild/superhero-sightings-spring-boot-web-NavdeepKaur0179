@@ -51,6 +51,7 @@ public interface SuperHeroServiceLayer {
     List<Sighting> getAllSightingByLocation(Location location);
     List<Location> getAllLocationsHeroSeen(Hero hero);
     List<Sighting> getAllSightingByDate(LocalDateTime date);
+    List<Sighting> getAllSightingsByHero(Hero hero);
     
     //SuperPower
     SuperPower getSuperPowerById(int id) throws ClassNoSuchRecordException;

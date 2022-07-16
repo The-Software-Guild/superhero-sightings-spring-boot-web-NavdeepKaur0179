@@ -5,6 +5,7 @@
  */
 package com.navdeep.superheroSightings.entities;
 
+import java.beans.Transient;
 import java.util.List;
 import java.util.Objects;
 import javax.validation.constraints.NotBlank;
@@ -24,6 +25,9 @@ public class Hero {
     @Size(max = 255, message="Description must be less than 255 characters.")
     private String description;
     
+    @Size(max = 45, message="Description must be less than 45 characters.")
+    private String imageName;
+    
     private SuperPower superPowers;
     
     private List<Organization> organizations;
@@ -31,23 +35,15 @@ public class Hero {
     public int getId() {
         return id;
     }
-    
+
     public void setId(int id) {
         this.id = id;
     }
-   
+
     public String getName() {
         return name;
     }
 
-    public SuperPower getSuperPowers() {
-        return superPowers;
-    }
-
-    public void setSuperPowers(SuperPower superPowers) {
-        this.superPowers = superPowers;
-    }
-    
     public void setName(String name) {
         this.name = name;
     }
@@ -60,6 +56,22 @@ public class Hero {
         this.description = description;
     }
 
+    public String getImageName() {
+        return imageName;
+    }
+
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
+    }
+
+    public SuperPower getSuperPowers() {
+        return superPowers;
+    }
+
+    public void setSuperPowers(SuperPower superPowers) {
+        this.superPowers = superPowers;
+    }
+
     public List<Organization> getOrganizations() {
         return organizations;
     }
@@ -67,15 +79,26 @@ public class Hero {
     public void setOrganizations(List<Organization> organizations) {
         this.organizations = organizations;
     }
+    
+    @Transient
+    public String getImagePath()
+    {
+        if(imageName == null)
+        {
+            return null;
+        }
+        return "/hero-images/" + id + imageName;
+    }
 
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 47 * hash + this.id;
-        hash = 47 * hash + Objects.hashCode(this.name);
-        hash = 47 * hash + Objects.hashCode(this.description);
-        hash = 47 * hash + Objects.hashCode(this.superPowers);
-        hash = 47 * hash + Objects.hashCode(this.organizations);
+        hash = 31 * hash + this.id;
+        hash = 31 * hash + Objects.hashCode(this.name);
+        hash = 31 * hash + Objects.hashCode(this.description);
+        hash = 31 * hash + Objects.hashCode(this.imageName);
+        hash = 31 * hash + Objects.hashCode(this.superPowers);
+        hash = 31 * hash + Objects.hashCode(this.organizations);
         return hash;
     }
 
@@ -100,6 +123,9 @@ public class Hero {
         if (!Objects.equals(this.description, other.description)) {
             return false;
         }
+        if (!Objects.equals(this.imageName, other.imageName)) {
+            return false;
+        }
         if (!Objects.equals(this.superPowers, other.superPowers)) {
             return false;
         }
@@ -109,4 +135,5 @@ public class Hero {
         return true;
     }
 
+   
 }

@@ -33,7 +33,10 @@ public class HomeController {
     public String getSightingsForHome(Model model) {
         List<Sighting> sightings;
         try {
-            sightings = superHeroServiceLayer.getAllSightings().subList(0, 10);
+            sightings = superHeroServiceLayer.getAllSightings();
+            if (sightings.size() > 10) {
+                sightings = sightings.subList(0, 10);
+            }
         } catch (ClassEmptyListException e) {
             exceptionErrorMessage = e.getMessage();
             return "redirect:/errorPage";

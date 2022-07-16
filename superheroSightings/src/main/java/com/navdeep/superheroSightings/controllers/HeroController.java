@@ -13,6 +13,13 @@ import com.navdeep.superheroSightings.service.ClassDataValidationException;
 import com.navdeep.superheroSightings.service.ClassEmptyListException;
 import com.navdeep.superheroSightings.service.ClassNoSuchRecordException;
 import com.navdeep.superheroSightings.service.SuperHeroServiceLayer;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,8 +33,11 @@ import javax.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -42,18 +52,6 @@ public class HeroController {
     public HeroController(SuperHeroServiceLayer superHeroServiceLayer) {
         this.superHeroServiceLayer = superHeroServiceLayer;
     }
-//    @Autowired
-//    HeroDao heroDao;
-//
-//    @Autowired
-//    LocationDao locationDao;
-//
-//    @Autowired
-//    OrganizationDao organizationDao;
-//
-//    @Autowired
-//    SightingDao sightingDao;
-
     // Set<ConstraintViolation<Hero>> violations = new HashSet<>();
     Map<Integer, List<Location>> heroLocations = new HashMap<>();
     List<Hero> heros;
@@ -84,15 +82,21 @@ public class HeroController {
             model.addAttribute("superPowers", superPowers);
         } catch (ClassEmptyListException e) {
             LocationController.exceptionErrorMessage = e.getMessage();
-            return "redirect/errorPage";
+            return "redirect:/errorPage";
         }
         //model.addAttribute("errors", violations);
         return "heros";
     }
 
     @PostMapping("/addHero")
-    public String addHero(Hero hero, HttpServletRequest request, Model model) {
+    public String addHero(Hero hero, @RequestParam("heroImage") MultipartFile multipartFile, HttpServletRequest request, Model model) {
         customErrors = new ArrayList<>();
+        String fileName = null;
+        if (multipartFile != null) {
+            fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+            hero.setImageName(fileName);
+        }
+        hero.setImageName(fileName);
         String[] organizationIds = request.getParameterValues("organizationId");
         List<Organization> organizations = new ArrayList<>();
         SuperPower superPower = null;
@@ -105,10 +109,9 @@ public class HeroController {
                 }
             } catch (ClassNoSuchRecordException e) {
                 LocationController.exceptionErrorMessage = e.getMessage();
-                return "redirect/errorPage";
+                return "redirect:/errorPage";
             }
             hero.setOrganizations(organizations);
-            hero.setSuperPowers(superPower);
         } else {
             customErrors.add(("You must select atleast one organization"));
             model.addAttribute("customErrors", customErrors);
@@ -123,9 +126,11 @@ public class HeroController {
                 superPower = superHeroServiceLayer.getSuperPowerById(Integer.parseInt(request.getParameter("superPowerId")));
             } catch (ClassNoSuchRecordException e) {
                 LocationController.exceptionErrorMessage = e.getMessage();
-                return "redirect/errorPage";
+                return "redirect:/errorPage";
             }
         }
+        hero.setSuperPowers(superPower);
+
         violations = validate.validate(hero);
         model.addAttribute("errors", violations);
         if (!violations.isEmpty()) {
@@ -133,28 +138,59 @@ public class HeroController {
             return "errorPage";
         }
         try {
-            superHeroServiceLayer.addHero(hero);
+            Hero addeHero = superHeroServiceLayer.addHero(hero);
+            //upload file in directory after successfully saving path in database
+            String uploadDir = "./src/main/resources/static/hero-images";
+            System.out.println(uploadDir);
+            Path uploadPath = Paths.get(uploadDir);
+            System.out.println(uploadPath);
+
+            if (!Files.exists(uploadPath)) {
+                try {
+                    Files.createDirectories(uploadPath);
+                } catch (IOException e) {
+                    LocationController.exceptionErrorMessage = "Could not create Image Folder ";
+                    return "redirect:/errorPage";
+                }
+            } else {
+                try {
+                    InputStream inputStream = multipartFile.getInputStream();
+                    Path filePath = uploadPath.resolve(fileName);
+                    Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                    LocationController.exceptionErrorMessage = "Could not save uploaded file " + fileName;
+                    return "redirect:/errorPage";
+                }
+            }
         } catch (ClassDataValidationException e) {
             LocationController.exceptionErrorMessage = e.getMessage();
-            return "redirect/errorPage";
+            return "redirect:/errorPage";
         }
         return "redirect:/heros";
     }
 
     @PostMapping("editHero")
-    public String editHero(HttpServletRequest request, Model model) {
+    public String editHero(HttpServletRequest request, @RequestParam("editHeroImage") MultipartFile multipartFile, Model model) {
         customErrors = new ArrayList<>();
+
         String[] organizationIds = request.getParameterValues("organizationId");
         String heroName = request.getParameter("name");
         String heroDescription = request.getParameter("description");
         String superPowerId = request.getParameter("superPowerId");
         String heroId = request.getParameter("id");
+
         SuperPower superPower = null;
         List<Organization> organizations = new ArrayList<>();
         Hero hero = new Hero();
         hero.setId(Integer.parseInt(heroId));
         hero.setName(heroName);
         hero.setDescription(heroDescription);
+        String fileName = null;
+        if (multipartFile != null) {
+            fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+            hero.setImageName(fileName);
+        }
+        hero.setImageName(fileName);
         violations = validate.validate(hero);
         model.addAttribute("errors", violations);
         if (organizationIds == null) {
@@ -168,7 +204,7 @@ public class HeroController {
                 }
             } catch (ClassNoSuchRecordException e) {
                 LocationController.exceptionErrorMessage = e.getMessage();
-                return "redirect/errorPage";
+                return "redirect:/errorPage";
             }
         }
         try {
@@ -177,7 +213,7 @@ public class HeroController {
             LocationController.exceptionErrorMessage = e.getMessage();
             customErrors.add(("You must select atleast one Super Power"));
             model.addAttribute("customErrors", customErrors);
-            return "redirect/errorPage";
+            return "redirect:/errorPage";
         }
 
         if (!violations.isEmpty()) {
@@ -188,6 +224,29 @@ public class HeroController {
             hero.setOrganizations(organizations);
             try {
                 superHeroServiceLayer.updateHero(hero);
+                //upload file in directory after successfully saving path in database
+                String uploadDir = "./src/main/resources/static/hero-images";
+                System.out.println(uploadDir);
+                Path uploadPath = Paths.get(uploadDir);
+                System.out.println(uploadPath);
+
+                if (!Files.exists(uploadPath)) {
+                    try {
+                        Files.createDirectories(uploadPath);
+                    } catch (IOException e) {
+                        LocationController.exceptionErrorMessage = "Could not create Image Folder ";
+                        return "redirect:/errorPage";
+                    }
+                } else {
+                    try {
+                        InputStream inputStream = multipartFile.getInputStream();
+                        Path filePath = uploadPath.resolve(fileName);
+                        Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+                    } catch (IOException e) {
+                        LocationController.exceptionErrorMessage = "Could not save uploaded file " + fileName;
+                        return "redirect:/errorPage";
+                    }
+                }
             } catch (ClassDataValidationException e) {
                 model.addAttribute("customErrors", customErrors);
                 return "errorPage";
@@ -198,18 +257,31 @@ public class HeroController {
 
     @PostMapping("/deleteHero")
     public String deleteHero(HttpServletRequest request) {
-        superHeroServiceLayer.deleteHeroById(Integer.parseInt(request.getParameter("id")));
+        int heroId = Integer.parseInt(request.getParameter("id"));
+        String heroImageName = request.getParameter("heroImageName");
+        superHeroServiceLayer.deleteHeroById(heroId);
+        //delete respective image folder
+        File heroImageFile = new File("./src/main/resources/static/hero-images/" + heroImageName);
+        heroImageFile.delete();
         return "redirect:/heros";
     }
 
     @PostMapping("herosByOrganization")
     public String herosByOrganization(HttpServletRequest request, Model model) {
+        customErrors = new ArrayList<>();
         Organization organization;
+        if (request.getParameter("organizationOfHeros") == null) {
+            customErrors.add(("You must select atleast one organization"));
+            model.addAttribute("customErrors", customErrors);
+            return "redirect:/errorPage";
+        }
+        int organizationId = Integer.parseInt(request.getParameter("organizationOfHeros"));
+
         try {
-            organization = superHeroServiceLayer.getOrganizationById(Integer.parseInt(request.getParameter("organizationOfHeros")));
+            organization = superHeroServiceLayer.getOrganizationById(organizationId);
         } catch (ClassNoSuchRecordException e) {
             LocationController.exceptionErrorMessage = e.getMessage();
-            return "redirect/errorPage";
+            return "redirect:/errorPage";
         }
         List<Hero> heros = superHeroServiceLayer.getAllMemberHerosOfOrganization(organization);
         for (Hero hero : heros) {
@@ -224,9 +296,8 @@ public class HeroController {
             model.addAttribute("superPowers", superPowers);
         } catch (ClassEmptyListException e) {
             LocationController.exceptionErrorMessage = e.getMessage();
-            return "redirect/errorPage";
+            return "redirect:/errorPage";
         }
         return "heros";
     }
-
 }

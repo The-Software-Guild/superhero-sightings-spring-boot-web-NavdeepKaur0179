@@ -14,6 +14,7 @@ import com.navdeep.superheroSightings.service.ClassNoSuchRecordException;
 import com.navdeep.superheroSightings.service.SuperHeroServiceLayer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -50,6 +51,8 @@ public class SightingController {
     List<Hero> heroes;
     List<Sighting> sightings;
     List<Location> locations;
+    String currentHeroImage = null;
+    boolean makeImageVisible = false;
 
     @GetMapping("sightings")
     public String getSightings(Model model) {
@@ -206,7 +209,7 @@ public class SightingController {
         if (!request.getParameter("date").equals("")) {
             //adding error message for future/Invalid date selected
             if (!LocalDateTime.parse(request.getParameter("date")).isAfter(LocalDateTime.now())) {
-                dateTime=LocalDateTime.parse(request.getParameter("date"));
+                dateTime = LocalDateTime.parse(request.getParameter("date"));
                 sighting.setDate(dateTime);
             } else {
                 customErrors.add("You cannot select future date for sighting record.");
@@ -239,7 +242,7 @@ public class SightingController {
             } else {
                 return "errorPage";
             }
-        }  
+        }
     }
 
     @PostMapping("/deleteSighting")
@@ -252,7 +255,17 @@ public class SightingController {
     @PostMapping("sightingsByDate")
     public String sightingsByDate(HttpServletRequest request, Model model
     ) {
-        LocalDate sightingDate = LocalDate.parse(request.getParameter("datetime"));
+        customErrors = new ArrayList<>();
+        LocalDate sightingDate;
+        try {
+            sightingDate = LocalDate.parse(request.getParameter("datetime"));
+
+        } catch (DateTimeParseException e) {
+            customErrors.add(("You must select date"));
+            model.addAttribute("customErrors", customErrors);
+            return "redirect:/errorPage";
+        }
+
         //LocalDate sightingDate = LocalDate.parse(dateTime);
         LocalDateTime sightingDateTime = sightingDate.atStartOfDay();
         sightings = superHeroServiceLayer.getAllSightingByDate(sightingDateTime);
@@ -270,9 +283,14 @@ public class SightingController {
     }
 
     @PostMapping("sightingsByLocation")
-    public String sightingsByLocation(HttpServletRequest request, Model model
-    ) {
+    public String sightingsByLocation(HttpServletRequest request, Model model) {
+        customErrors = new ArrayList<>();
         String locationId = request.getParameter("locationId");
+        if (locationId == null) {
+            customErrors.add(("You must select atleast one Location"));
+            model.addAttribute("customErrors", customErrors);
+            return "redirect:/errorPage";
+        }
         Location location;
         try {
             location = superHeroServiceLayer.getLocationById(Integer.parseInt(locationId));
@@ -293,13 +311,28 @@ public class SightingController {
         model.addAttribute("locations", locations);
         return "sightings";
     }
-    
+
     @PostMapping("sightingsByHero")
     public String sightingsByHero(HttpServletRequest request, Model model) {
+        customErrors = new ArrayList<>();
         String heroId = request.getParameter("heroId");
+        if (heroId == null) {
+            error.setMessage("Errors are as follows:");
+            model.addAttribute("errors", error);
+            customErrors.add(("You must select atleast one Hero"));
+            model.addAttribute("customErrors", customErrors);
+            return "redirect:/errorPage";
+        }
+        System.out.println(heroId);
         Hero hero;
         try {
             hero = superHeroServiceLayer.getHeroById(Integer.parseInt(heroId));
+            currentHeroImage = "/hero-images/" + hero.getImageName();
+            if (currentHeroImage != null) {
+                model.addAttribute("imageSrc", currentHeroImage);
+                model.addAttribute("makeImageVisible", true);
+            }
+            System.out.println("currentHeroImage" + currentHeroImage);
         } catch (ClassNoSuchRecordException e) {
             LocationController.exceptionErrorMessage = e.getMessage();
             return "redirect:/errorPage";
@@ -317,7 +350,5 @@ public class SightingController {
         model.addAttribute("locations", locations);
         return "sightings";
     }
-    
-    
 
 }

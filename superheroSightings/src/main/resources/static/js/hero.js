@@ -15,7 +15,7 @@ $(document).ready(function ()
 
 function  showImageThumbnail(fileInput, imageThumbnail)
 {
-    alert("showImageThumbnail");
+    //alert("showImageThumbnail");
     const [file] = fileInput.files;
     if (file)
     {

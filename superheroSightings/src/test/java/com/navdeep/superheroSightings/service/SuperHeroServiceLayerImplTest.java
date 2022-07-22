@@ -117,10 +117,10 @@ public class SuperHeroServiceLayerImplTest {
         location.setName("Test Location name");
         location.setDescription("Test Location description");
         location.setAddress("Test Location address");
-        location.setLatitude("Test Location Latitude");
-        location.setLongitude("Test Location Latitude");
-        location=serviceLayer.addLocation(location);
-        
+        location.setLatitude("40.71455");
+        location.setLongitude("-74.00712");
+        location = serviceLayer.addLocation(location);
+
         Location shouldBeTestLocation = serviceLayer.getLocationById(location.getId());
         assertNotNull(shouldBeTestLocation);
         assertEquals(location, shouldBeTestLocation);
@@ -141,9 +141,9 @@ public class SuperHeroServiceLayerImplTest {
         location.setName("Test Location name");
         location.setDescription("Test Location description");
         location.setAddress("Test Location address");
-        location.setLatitude("Test Location Latitude");
-        location.setLongitude("Test Location Latitude");
-        location=serviceLayer.addLocation(location);
+        location.setLatitude("40.71455");
+        location.setLongitude("-74.00712");
+        location = serviceLayer.addLocation(location);
 
         List<Location> locations = serviceLayer.getAllLocations();
         assertEquals(1, locations.size());
@@ -166,8 +166,8 @@ public class SuperHeroServiceLayerImplTest {
         location.setName("Test Location name");
         location.setDescription("Test Location description");
         location.setAddress("Test Location address");
-        location.setLatitude("Test Location Latitude");
-        location.setLongitude("Test Location Latitude");
+       location.setLatitude("40.71455");
+        location.setLongitude("-74.00712");
         try {
             serviceLayer.addLocation(location);
         } catch (ClassDataValidationException e) {
@@ -180,26 +180,14 @@ public class SuperHeroServiceLayerImplTest {
         Location location = new Location();
         location.setDescription("Test Location description");
         location.setAddress("Test Location address");
-        location.setLatitude("Test Location Latitude");
-        location.setLongitude("Test Location Latitude");
+        location.setLatitude("40.71455");
+        location.setLongitude("-74.00712");
         try {
             serviceLayer.addLocation(location);
         } catch (ClassDataValidationException e) {
             return;
         }
     }
-//    @Test
-//    public void testUpdateLocation() throws Exception {
-//    }
-//
-//    /**
-//     * Test of deleteLocationById method, of class SuperHeroServiceLayerImpl.
-//     */
-//    @Test
-//    public void testDeleteLocationById() {
-//    }
-//
-
     /**
      * Test of getHeroById method, of class SuperHeroServiceLayerImpl.
      */
@@ -225,7 +213,6 @@ public class SuperHeroServiceLayerImplTest {
         testHero.setSuperPowers(superPowers);
         testHero.setOrganizations(organizationList);
         testHero = serviceLayer.addHero(testHero);
-        
 
         Hero shouldBeTestHero = serviceLayer.getHeroById(testHero.getId());
         assertNotNull(shouldBeTestHero);
@@ -337,29 +324,6 @@ public class SuperHeroServiceLayerImplTest {
             return;
         }
     }
-//
-//    /**
-//     * Test of updateHero method, of class SuperHeroServiceLayerImpl.
-//     */
-//    @Test
-//    public void testUpdateHero() throws Exception {
-//    }
-//
-//    /**
-//     * Test of deleteHeroById method, of class SuperHeroServiceLayerImpl.
-//     */
-//    @Test
-//    public void testDeleteHeroById() {
-//    }
-//
-//    /**
-//     * Test of getAllMemberHerosOfOrganization method, of class
-//     * SuperHeroServiceLayerImpl.
-//     */
-//    @Test
-//    public void testGetAllMemberHerosOfOrganization() {
-//    }
-
     /**
      * Test of getLocationById method, of class SuperHeroServiceLayerImpl.
      */
@@ -442,30 +406,6 @@ public class SuperHeroServiceLayerImplTest {
         }
 
     }
-
-//    /**
-//     * Test of updateorganization method, of class SuperHeroServiceLayerImpl.
-//     */
-//    @Test
-//    public void testUpdateorganization() throws Exception {
-//    }
-//
-//    /**
-//     * Test of deleteOrganizationbyId method, of class
-//     * SuperHeroServiceLayerImpl.
-//     */
-//    @Test
-//    public void testDeleteOrganizationbyId() {
-//    }
-//
-//    /**
-//     * Test of getAllOrganizationsOfHero method, of class
-//     * SuperHeroServiceLayerImpl.
-//     */
-//    @Test
-//    public void testGetAllOrganizationsOfHero() {
-//    }
-//
     /**
      * Test of getSighingById method, of class SuperHeroServiceLayerImpl.
      */
@@ -497,8 +437,8 @@ public class SuperHeroServiceLayerImplTest {
         location.setName("Test Location name");
         location.setDescription("Test Location description");
         location.setAddress("Test Location address");
-        location.setLatitude("Test Location Latitude");
-        location.setLongitude("Test Location Latitude");
+       location.setLatitude("40.71455");
+        location.setLongitude("-74.00712");
         location = serviceLayer.addLocation(location);
 
         Sighting sighting = new Sighting();
@@ -551,8 +491,8 @@ public class SuperHeroServiceLayerImplTest {
         location.setName("Test Location name");
         location.setDescription("Test Location description");
         location.setAddress("Test Location address");
-        location.setLatitude("Test Location Latitude");
-        location.setLongitude("Test Location Latitude");
+        location.setLatitude("40.71455");
+        location.setLongitude("-74.00712");
         location = serviceLayer.addLocation(location);
 
         Sighting sighting = new Sighting();
@@ -607,8 +547,8 @@ public class SuperHeroServiceLayerImplTest {
         location.setName("Test Location name");
         location.setDescription("Test Location description");
         location.setAddress("Test Location address");
-        location.setLatitude("Test Location Latitude");
-        location.setLongitude("Test Location Latitude");
+        location.setLatitude("40.71455");
+        location.setLongitude("-74.00712");
         location = serviceLayer.addLocation(location);
 
         Sighting sighting = new Sighting();
@@ -653,8 +593,8 @@ public class SuperHeroServiceLayerImplTest {
         location.setName("Test Location name");
         location.setDescription("Test Location description");
         location.setAddress("Test Location address");
-        location.setLatitude("Test Location Latitude");
-        location.setLongitude("Test Location Latitude");
+        location.setLatitude("40.71455");
+        location.setLongitude("-74.00712");
         location = serviceLayer.addLocation(location);
 
         Sighting sighting = new Sighting();
@@ -670,45 +610,4 @@ public class SuperHeroServiceLayerImplTest {
             return;
         }
     }
-
-//    /**
-//     * Test of updateSighting method, of class SuperHeroServiceLayerImpl.
-//     */
-//    @Test
-//    public void testUpdateSighting() {
-//    }
-//
-//    /**
-//     * Test of deleteSightingById method, of class SuperHeroServiceLayerImpl.
-//     */
-//    @Test
-//    public void testDeleteSightingById() {
-//    }
-//
-//    /**
-//     * Test of getAllSightingByLocation method, of class
-//     * SuperHeroServiceLayerImpl.
-//     */
-//    @Test
-//    public void testGetAllSightingByLocation() {
-//    }
-//
-//    /**
-//     * Test of getAllLocationsHeroSeen method, of class
-//     * SuperHeroServiceLayerImpl.
-//     */
-//    @Test
-//    public void testGetAllLocationsHeroSeen() {
-//    }
-//
-//    /**
-//     * Test of getAllSightingByDate method, of class SuperHeroServiceLayerImpl.
-//     */
-//    @Test
-//    public void testGetAllSightingByDate() {
-//    }
-//
-//    private void assertNull() {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
 }

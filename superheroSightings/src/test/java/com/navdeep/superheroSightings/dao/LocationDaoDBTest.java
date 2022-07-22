@@ -109,16 +109,16 @@ public class LocationDaoDBTest {
         location.setName("Test Location name");
         location.setDescription("Test Location description");
         location.setAddress("Test Location address");
-        location.setLatitude("Test Location latitude");
-        location.setLongitude("Test Location longitude");
+        location.setLatitude("40.71455");
+        location.setLongitude("-74.00712");
         location = locationDao.addLocation(location);
 
         Location location2 = new Location();
         location2.setName("Test Location name 2");
         location2.setDescription("Test Location description 2");
         location2.setAddress("Test Location address 2");
-        location2.setLatitude("Test Location latitude");
-        location2.setLongitude("Test Location longitude");
+        location2.setLatitude("33.77391");
+        location2.setLongitude("-84.53921");
         location2 = locationDao.addLocation(location2);
 
         List<Location> locations = locationDao.getAllLocations();
@@ -137,8 +137,8 @@ public class LocationDaoDBTest {
         location.setName("Test Location name");
         location.setDescription("Test Location description");
         location.setAddress("Test Location address");
-        location.setLatitude("Test Location latitude");
-        location.setLongitude("Test Location longitude");
+        location.setLatitude("40.71455");
+        location.setLongitude("-74.00712");
         location = locationDao.addLocation(location);
 
         Location fromDao = locationDao.getLocationById(location.getId());
@@ -179,8 +179,8 @@ public class LocationDaoDBTest {
         location.setName("Test Location name");
         location.setDescription("Test Location description");
         location.setAddress("Test Location address");
-        location.setLatitude("Test Location latitude");
-        location.setLongitude("Test Location longitude");
+        location.setLatitude("40.71455");
+        location.setLongitude("-74.00712");
         location = locationDao.addLocation(location);
 
         Sighting sighting = new Sighting();

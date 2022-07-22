@@ -5,12 +5,12 @@ $(document).ready(function ()
         let imageThumbnail = $('#imageThumbnail');
         showImageThumbnail(this, imageThumbnail);
     })
-    $('#editHeroImage').change(function ()
-    {
-        let editImageThumbnail = $('#editImageThumbnail');
-        showImageThumbnail(this, editImageThumbnail);
-
-    });
+//    $('#editHeroImage').change(function ()
+//    {
+//        let editImageThumbnail = $('#editImageThumbnail');
+//        showImageThumbnail(this, editImageThumbnail);
+//
+//    });
 });
 
 function  showImageThumbnail(fileInput, imageThumbnail)
@@ -35,3 +35,11 @@ function  showImageThumbnail(fileInput, imageThumbnail)
 ////    showImageThumbnail(this, editImageThumbnail);
 //}
 
+//var reader = new FileReader();
+//reader.onload = function(r_event) {
+//  document.getElementById('prev').setAttribute('src', r_event.target.result);
+//}
+//
+//document.getElementsByName('file')[0].addEventListener('change', function(event) {
+//    reader.readAsDataURL(this.files[0]);
+//});

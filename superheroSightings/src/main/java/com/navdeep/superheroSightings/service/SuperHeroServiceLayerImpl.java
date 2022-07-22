@@ -247,10 +247,13 @@ public class SuperHeroServiceLayerImpl implements SuperHeroServiceLayer {
     }
 
     private boolean validateLocationData(Location location) {
+        String latitude = "^-?([1-8]?[1-9]|[1-9]0)\\.{1}\\d{1,6}";
+        String longitude = "^-?([1]?[1-7][1-9]|[1]?[1-8][0]|[1-9]?[0-9])\\.{1}\\d{1,6}";
         if (location.getName() == null || location.getName().trim().length() == 0
                 || location.getAddress() == null || location.getAddress().trim().length() == 0
                 || location.getLongitude() == null || location.getLongitude().trim().length() == 0
-                || location.getLatitude() == null || location.getLatitude().trim().length() == 0) {
+                || location.getLatitude() == null || location.getLatitude().trim().length() == 0 ||
+                !location.getLatitude().matches(latitude) || !location.getLongitude().matches(longitude)) {
 
             return false;
         }

@@ -7,13 +7,13 @@ values
 (4, 'Invisibility', 'Becomes invisible at will'),
 (6, 'Timey Wimey', 'Can manipulate time.  Make it slower or faster.');
 
-insert into hero (id, name, description, superPowerId)
+insert into hero (id, name, description, superPowerId,imageName)
 values
-(4, 'Mighty Man','The mightiest of all', 1),
-(5, 'Wizard Warrior','Very quick with the spell', 2),
-(7, 'Dr Who','Has a TARDIS and travels thru time', 6),
-(8, 'The Master', 'Bad guy with his own TARDIS', 6),
-(10, 'Super Chaos','Just another bad guy who can be invisible', 4);
+(4, 'Mighty Man','The mightiest of all', 1,'MightyMan.jpg'),
+(5, 'Wizard Warrior','Very quick with the spell', 2,'WizardWarrior.jpg'),
+(7, 'Dr Who','Has a TARDIS and travels thru time', 6,'DrWho.jpg'),
+(8, 'The Master', 'Bad guy with his own TARDIS', 6,'TheMaster.jpg'),
+(10, 'Super Chaos','Just another bad guy who can be invisible', 4,'SuperChaos.jpg');
 
 INSERT INTO organization (id, `name`,`description`, address ) 
 VALUES

@@ -5,9 +5,11 @@
  */
 package com.navdeep.superheroSightings.controllers;
 
+import com.navdeep.superheroSightings.entities.Location;
 import com.navdeep.superheroSightings.entities.Sighting;
 import com.navdeep.superheroSightings.service.ClassEmptyListException;
 import com.navdeep.superheroSightings.service.SuperHeroServiceLayer;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -42,6 +44,9 @@ public class HomeController {
             return "redirect:/errorPage";
         }
         model.addAttribute("sightings", sightings);
+        List<Location> locations=new ArrayList<>();
+        sightings.forEach(sighting->locations.add(sighting.getLocation()));
+        model.addAttribute("locations", locations);
         return "index";
     }
 

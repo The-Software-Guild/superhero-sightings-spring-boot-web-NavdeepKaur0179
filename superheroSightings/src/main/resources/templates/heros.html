@@ -293,8 +293,8 @@
             <div class="col-4 m-2">
                 <form action="herosByOrganization" method="POST">
                     <div class="form-group row">
-                        <label for="date" class="col-6 col-form-label text-right font-weight-bold">Members of Organization</label>
-                        <div class="col-6">
+                        <label for="date" class="col-4 col-form-label text-right font-weight-bold">Members of Organization</label>
+                        <div class="col-8">
                             <select  id="organizationOfHeros" class="form-control" name="organizationOfHeros">
                                 <option value="" selected disabled hidden>--Choose Organization--</option>
                                 <option th:each="organization : ${organizations}"

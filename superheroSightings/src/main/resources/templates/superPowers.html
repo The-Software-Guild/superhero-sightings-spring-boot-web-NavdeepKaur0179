@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+              integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+            <title>Super Sighting Sighting  </title>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col text-center">
+                    <h1>The Hero Education and Relationship Organization (HERO)</h1>
+                </div>
+            </div>
+            <div class="row m-4 ">
+                <div class="col text-center m-3">
+                    <a href="heros" class="btn btn-outline-primary btn-lg">Heroes & Villians</a>
+                </div>
+                <div class="col text-center m-3">
+                    <a href="superPowers" class="btn btn-outline-primary btn-lg">Super Powers</a>
+                </div>
+                <div class="col text-center m-3">
+                    <a href="locations" class="btn btn-outline-primary btn-lg">Locations</a>
+                </div>
+                <div class="col text-center m-3">
+                    <a href="organizations" class="btn btn-outline-primary btn-lg">Organizations</a>
+                </div>
+                <div class="col text-center m-3">
+                    <a href="sightings" class="btn btn-outline-primary btn-lg">Sightings</a>
+                </div>
+            </div>
+        </div>
+        <!-- Button trigger modal --><div class="row">
+            <div class="col-10"></div>
+            <div class="col-2">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addSuperPowerModal">
+                    Add Super Power
+                </button>
+            </div>
+
+        </div>
+        <!--*****************Add SuperPower Modal******************-->
+        <div class="modal" id="addSuperPowerModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Super Power</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+
+                        <form type="form" action="addSuperPower" method="POST">
+                            <div class="form-group">
+                                <label for="superPower">Super Power Name</label>
+                                <input type="text" class="form-control" id="superPower" name="SuperPower"/>
+                            </div>
+                            <div class="form-group">
+                                <label  for="description">Description</label>
+                                <textarea rows="2" class="form-control text-start" id="description" name="description">
+                                </textarea>
+                            </div>                           
+                            <button type="submit" class="btn btn-primary">Add Super Power</button> 
+                        </form>                
+                    </div>                   
+                </div>
+            </div>
+        </div>
+
+        <div class="row m-4 border border-primary">
+            <div class="col m-3">
+                <div class="col-12 text-center m-3">
+                    <span class="h3">Super Powers List</span>     
+                </div>
+                <table class="table table-sm text-left">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>                            
+                            <th>Edit</th>                          
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody class="h4 small">
+                        <tr th:each="superPower : ${superPowers}">
+                            <td th:text="${superPower.superPower}">Super Power name</td>
+                            <td th:text="${superPower.description}">Description</td>                          
+                            <td><a th:attr="href=${'#editModal'+superPower.id}" data-toggle="modal" th:data-row="${superPower}">Edit</a></td>
+                            <!--*****************Edit superPowers Modal******************-->                       
+                            <div th:each="superPower : ${superPowers}" class="modal" th:attr="id=${'editModal'+ superPower.id}" tabindex="-1" role="dialog">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Edit SuperPowers</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+
+                                            <form type="form" action="editSuperPower" method="POST">
+                                                <div class="form-group">
+                                                    <label for="superPower">Super Power Name</label>
+                                                    <input type="text" class="form-control" id="superPower" name="superPower" 
+                                                           th:value="${superPower.superPower}"/>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label  for="description">Description</label>
+                                                    <textarea rows="2" class="form-control text-start" id="description" name="description" 
+                                                              th:text="${superPower.description}">
+                                                        Description
+                                                    </textarea>
+                                                </div>                                               
+                                                <input type="hidden" name="id" th:value="${superPower.id}"/>
+                                                <button type="submit" class="btn btn-primary">Update Super Power</button> 
+                                            </form>                
+                                        </div>                                       
+                                    </div>
+                                </div>
+                            </div>
+                            <td><a href="#" th:attr="href=${'#deleteModal'+superPower.id}" data-toggle="modal" >Delete</a></td>
+                            <!--**********************Delete Modal**********************************-->
+                            <div class="modal" th:each="superPower : ${superPowers}" th:attr="id=${'deleteModal'+ superPower.id}" tabindex="-1" role="dialog">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Deletion Confirmation</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Would you like to proceed with deletion?</p>                                            
+                                        </div>
+                                        <div class="modal-footer">
+                                            <form type="form" action="deleteSuperPower" method="POST">
+                                                <input type="hidden" name="id" th:value="${superPower.id}"/>
+                                                <button type="submit" class="btn btn-primary">Yes</button> 
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        </div>
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+                integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+                integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+                integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+    </body>
+
+</html>

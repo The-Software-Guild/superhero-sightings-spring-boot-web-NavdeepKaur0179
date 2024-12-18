@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"  crossorigin="anonymous"></link>
+
+        <title>Super Hero Sighting </title>
+        <style>
+            #map {
+                height: 50%;
+                margin:2%;
+                border: 1px solid blue;
+            }
+            html, body {
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+        </style>
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            var locations = /*[[${locations}]]*/ "locations";
+            /*]]>*/
+            //var locationsList=JSON.stringify(locations);
+            // Initialize and add the map
+            function initMap() {
+                const firstLocation = {lat: parseInt(locations[0].latitude), lng: parseInt(locations[0].longitude)};
+                const map = new google.maps.Map(document.getElementById("map"), {
+                    zoom: 4,
+                    center: firstLocation,
+                });
+                for (var counter = 0; counter < locations.length; counter++)
+                {
+                    console.log(locations[counter].latitude);
+                    const location = {lat: parseInt(locations[counter].latitude), lng: parseInt(locations[counter].longitude)};
+                    const title = locations[counter].name;
+                    const marker = new google.maps.Marker({
+                        position: location,
+                        title:title,
+                        map: map
+                    });
+                }
+            }
+            window.initMap = initMap;
+        </script>
+    </head>
+    <body>
+        <!-- Main Body of Page -->
+        <div class="container">
+            <div class="row m-4">
+                <div class="col text-center ">
+                    <h1>The Hero Education and Relationship Organization (HERO)</h1>
+                </div>
+            </div>
+            <div class="row m-4 ">
+                <div class="col text-center m-3">
+                    <a href="heros" class="btn btn-outline-primary btn-lg">Heroes & Villians</a>
+                </div>
+                <div class="col text-center m-3">
+                    <a href="superPowers" class="btn btn-outline-primary btn-lg">Super Powers</a>
+                </div>
+                <div class="col text-center m-3">
+                    <a href="locations" class="btn btn-outline-primary btn-lg">Locations</a>
+                </div>
+                <div class="col text-center m-3">
+                    <a href="organizations" class="btn btn-outline-primary btn-lg">Organizations</a>
+                </div>
+                <div class="col text-center m-3">
+                    <a href="sightings" class="btn btn-outline-primary btn-lg">Sightings</a>
+                </div>
+            </div>
+        </div>
+        <div class="row m-4 border border-primary  text-center">
+            <span class="col h4 m-3">Welcome to Super Hero & Villian Sightings.  Here you can report and view super hero and super villian sightings!</span>
+        </div>
+
+        <div class="row m-4 border border-primary">
+            <div class="col text-center m-3">
+                <div class="col-12 text-center m-3">
+                    <span class="h3">Latest Hero Sightings</span>     
+                </div>
+                <table class="table table-sm text-left">
+                    <thead>
+                        <tr>
+                            <th width="20%">Hero</th>
+                            <th width="20%">Location</th>                          
+                            <th width="40%">Description</th>
+                            <th width="20%">Date & Time</th>
+                        </tr>
+                    </thead>
+                    <tbody class="h4 small">
+                        <tr th:each="sighting : ${sightings}">
+                            <td th:text="${sighting.hero.name}"></td>
+                            <td th:text="${sighting.location.name}"></td>                        
+                            <td th:text="${sighting.description}"></td>
+                            <td th:text="${#temporals.format(sighting.date, 'MM/dd/yyyy hh:mm a')}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>   
+
+        </div>
+        <div id="map"></div>
+
+
+        <!-- End main body -->
+
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then ABootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"  crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"  crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"  crossorigin="anonymous"></script>
+        <script async
+                src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA30Es1drpJFdLl_14P63LyDhJ4WWLuRdM&callback=initMap">
+        </script>
+    </body>
+</html>
